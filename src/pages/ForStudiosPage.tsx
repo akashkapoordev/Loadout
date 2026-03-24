@@ -44,7 +44,11 @@ export default function ForStudiosPage() {
     setValidationError('')
     setFormState('submitting')
 
-    const { error } = await supabase.from('studio_waitlist').insert({ email: trimmed })
+    const insertPromise = supabase.from('studio_waitlist').insert({ email: trimmed })
+    const timeoutPromise = new Promise<{ error: { code: string; message: string } }>(resolve =>
+      setTimeout(() => resolve({ error: { code: 'TIMEOUT', message: 'Request timed out' } }), 10000)
+    )
+    const { error } = await Promise.race([insertPromise, timeoutPromise])
 
     if (!error) {
       setFormState('success')
@@ -89,11 +93,11 @@ export default function ForStudiosPage() {
         <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>Drop your email and we'll let you know when studio tools go live.</p>
 
         {formState === 'success' ? (
-          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--orange)', padding: '12px 0' }}>
+          <div role="alert" style={{ fontSize: 15, fontWeight: 700, color: 'var(--orange)', padding: '12px 0' }}>
             ✓ You're on the list! We'll notify you when we launch.
           </div>
         ) : formState === 'duplicate' ? (
-          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--orange)', padding: '12px 0' }}>
+          <div role="alert" style={{ fontSize: 15, fontWeight: 700, color: 'var(--orange)', padding: '12px 0' }}>
             ✓ You're already on the list!
           </div>
         ) : (
@@ -103,7 +107,9 @@ export default function ForStudiosPage() {
                 type="email"
                 placeholder="studio@yourgame.com"
                 value={email}
-                onChange={e => { setEmail(e.target.value); setValidationError(''); if (formState === 'error') setFormState('idle') }}
+                aria-describedby={validationError ? 'email-error' : undefined}
+                aria-invalid={!!validationError}
+                onChange={e => { setEmail(e.target.value); setValidationError(''); if (formState === 'error' || formState === 'duplicate') setFormState('idle') }}
                 style={{
                   flex: 1, padding: '10px 14px', fontSize: 14,
                   fontFamily: 'var(--font-ui)', background: 'var(--bg)',
@@ -126,10 +132,10 @@ export default function ForStudiosPage() {
               </button>
             </div>
             {validationError && (
-              <div style={{ fontSize: 12, color: 'var(--orange)', marginTop: 8, textAlign: 'left' }}>{validationError}</div>
+              <div id="email-error" role="alert" style={{ fontSize: 12, color: 'var(--orange)', marginTop: 8, textAlign: 'left' }}>{validationError}</div>
             )}
             {formState === 'error' && (
-              <div style={{ fontSize: 12, color: 'var(--orange)', marginTop: 8 }}>Something went wrong. Please try again.</div>
+              <div role="alert" style={{ fontSize: 12, color: 'var(--orange)', marginTop: 8 }}>Something went wrong. Please try again.</div>
             )}
           </form>
         )}
