@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Loadout — Gaming Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #080810;
+  --bg2:        #0D0D18;
+  --surface:    #111120;
+  --surface2:   #181828;
+  --border:     #1E1E35;
+  --border2:    #28283F;
+  --text:       #F0F0FF;
+  --sub:        #8888AA;
+  --muted:      #55556A;
+  --orange:     #FF5C00;
+  --orange-dim: rgba(255,92,0,0.12);
+  --orange-glow:rgba(255,92,0,0.35);
+  --cyan:       #00D4FF;
+  --cyan-dim:   rgba(0,212,255,0.1);
+  --purple:     #9D60FF;
+  --green:      #39FF83;
+  --red:        #FF3A3A;
+  --font-game:  'Barlow Condensed', sans-serif;
+  --font-ui:    'Rajdhani', sans-serif;
+  --font-body:  'Inter', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ───────────────────────────────── NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 0;
+  background: rgba(8,8,16,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* orange left stripe */
+nav::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--orange), transparent);
+}
+
+.logo {
+  font-family: var(--font-game);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-right: 36px;
+  flex-shrink: 0;
+}
+.logo em {
+  font-style: normal;
+  color: var(--orange);
+  text-shadow: 0 0 20px var(--orange-glow);
+}
+
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 60px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--sub);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active {
+  color: var(--text);
+}
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 16px; right: 16px;
+  height: 2px;
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange);
+}
+.nav-icon { font-size: 14px; opacity: 0.8; }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-outline {
+  background: transparent;
+  color: var(--sub);
+  border: 1px solid var(--border2);
+}
+.btn-outline:hover { color: var(--text); border-color: var(--sub); }
+
+.btn-orange {
+  background: var(--orange);
+  color: #fff;
+  box-shadow: 0 0 20px var(--orange-glow);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+.btn-orange:hover {
+  background: #FF7A2A;
+  box-shadow: 0 0 30px var(--orange-glow);
+  transform: translateY(-1px);
+}
+
+/* ───────────────────────────────── HERO */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+/* grid BG */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.4;
+}
+
+/* orange radial glow */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -100px; left: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(255,92,0,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 60px 28px 52px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.hero-left {}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--orange-dim);
+  border: 1px solid var(--orange);
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 20px;
+}
+.kicker-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange);
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink {
+  0%,100%{opacity:1} 50%{opacity:0.3}
+}
+
+h1 {
+  font-family: var(--font-game);
+  font-size: 72px;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+h1 .hl {
+  color: var(--orange);
+  text-shadow: 0 0 40px var(--orange-glow);
+  display: block;
+}
+
+.hero-desc {
+  font-size: 15px;
+  color: var(--sub);
+  line-height: 1.7;
+  max-width: 440px;
+  margin-bottom: 32px;
+}
+
+.hero-cta { display: flex; gap: 12px; align-items: center; }
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* FEATURED JOB CARD in hero */
+.hero-feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.hero-feature-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--orange);
+}
+.hero-feature-card:hover {
+  border-color: var(--orange);
+  transform: translateX(3px);
+  box-shadow: -4px 0 20px var(--orange-glow);
+}
+
+.hfc-tag {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 8px;
+}
+.hfc-title {
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.hfc-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--sub);
+}
+
+.hero-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.hstat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  text-align: center;
+}
+.hstat-val {
+  font-family: var(--font-game);
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.hstat-val span { color: var(--orange); }
+.hstat-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ───────────────────────────────── FILTER BAR */
+.filter-bar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.filter-title {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-right: 12px;
+  border-right: 1px solid var(--border2);
+  margin-right: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: 2px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--sub);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%);
+}
+.pill:hover { color: var(--text); border-color: var(--sub); }
+.pill.active {
+  background: var(--orange-dim);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* ───────────────────────────────── MAIN GRID */
+.wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 28px 60px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+}
+
+/* ─ SECTION HEADER */
+.sec-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.sec-title {
+  font-family: var(--font-game);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text);
+  flex: 1;
+}
+.sec-title span { color: var(--orange); }
+.sec-count {
+  background: var(--orange-dim);
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.sec-more {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--orange);
+  cursor: pointer;
+}
+.sec-more:hover { text-decoration: underline; }
+
+/* ─ JOB CARDS */
+.jobs-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 40px; }
+
+.job-card {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.15s;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+.job-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: transparent;
+  transition: background 0.15s;
+}
+.job-card:hover {
+  border-color: var(--orange);
+  background: var(--surface2);
+}
+.job-card:hover::before { background: var(--orange); }
+.job-card:hover .jc-title { color: var(--orange); }
+
+.jc-logo {
+  width: 50px; height: 50px;
+  border-radius: 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-game);
+  font-size: 17px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.jc-title {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 5px;
+  transition: color 0.15s;
+}
+.jc-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.jc-company { font-size: 12px; color: var(--sub); }
+.jc-loc { font-size: 11px; color: var(--muted); }
+
+.jc-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.badge {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.badge-new    { color: var(--green);  border-color: rgba(57,255,131,0.4);  background: rgba(57,255,131,0.08);  }
+.badge-hot    { color: var(--red);    border-color: rgba(255,58,58,0.4);   background: rgba(255,58,58,0.08);   }
+.badge-feat   { color: var(--orange); border-color: rgba(255,92,0,0.4);    background: rgba(255,92,0,0.08);    }
+.badge-remote { color: var(--cyan);   border-color: rgba(0,212,255,0.4);   background: rgba(0,212,255,0.08);   }
+
+.jc-salary {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+}
+
+/* ─ CONTENT CARDS GRID */
+.content-grid-label {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.cgl-tab {
+  font-family: var(--font-game);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  padding-bottom: 2px;
+  transition: color 0.15s;
+}
+.cgl-tab.active {
+  color: var(--text);
+  border-bottom: 2px solid var(--orange);
+}
+.cgl-tab:hover { color: var(--text); }
+.cgl-sep { color: var(--border2); font-size: 20px; line-height: 1.2; }
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.content-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+}
+.content-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+}
+.content-card.featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.cc-thumb {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.content-card.featured .cc-thumb { height: 100%; min-height: 160px; }
+
+.thumb-1 { background: linear-gradient(135deg, #0D1B2A, #1E3A5F); }
+.thumb-2 { background: linear-gradient(135deg, #1A0A00, #3D1F00); }
+.thumb-3 { background: linear-gradient(135deg, #0A1A0A, #1A3A1A); }
+.thumb-4 { background: linear-gradient(135deg, #1A0A1A, #3A0A3A); }
+.thumb-5 { background: linear-gradient(135deg, #0A1A1A, #0A3A3A); }
+
+.cc-body { padding: 14px; }
+.content-card.featured .cc-body { padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+
+.cc-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
+.type-guide    { color: var(--cyan);   background: var(--cyan-dim); border: 1px solid rgba(0,212,255,0.3); }
+.type-tutorial { color: var(--orange); background: var(--orange-dim); border: 1px solid rgba(255,92,0,0.3); }
+.type-devlog   { color: var(--purple); background: rgba(157,96,255,0.1); border: 1px solid rgba(157,96,255,0.3); }
+.type-article  { color: var(--green);  background: rgba(57,255,131,0.08); border: 1px solid rgba(57,255,131,0.3); }
+
+.cc-title {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+.content-card.featured .cc-title { font-size: 20px; }
+.cc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.cc-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border2); }
+
+/* ───────────────────────────────── SIDEBAR */
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+.side-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.side-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.side-title {
+  font-family: var(--font-game);
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.side-title::before {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 14px;
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange);
+}
+.side-more {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--orange);
+  cursor: pointer;
+}
+.side-body { padding: 8px 0; }
+
+/* COMPANY ROWS */
+.co-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.co-row:hover { background: var(--surface2); }
+.co-row:hover .co-name { color: var(--orange); }
+.co-logo {
+  width: 38px; height: 38px;
+  border-radius: 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-game);
+  font-size: 14px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.co-info { flex: 1; }
+.co-name {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  transition: color 0.15s;
+  margin-bottom: 1px;
+}
+.co-jobs { font-size: 11px; color: var(--muted); }
+.co-arrow { color: var(--muted); }
+
+/* TRENDING */
+.trend-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.trend-row:last-child { border-bottom: none; }
+.trend-row:hover { background: var(--surface2); }
+.trend-row:hover .tr-title { color: var(--orange); }
+.tr-num {
+  font-family: var(--font-game);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--border2);
+  line-height: 1;
+  min-width: 30px;
+  letter-spacing: -1px;
+}
+.tr-type {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.tr-title {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  transition: color 0.15s;
+}
+
+/* CALLOUT */
+.callout {
+  background: var(--surface);
+  border: 1px solid var(--orange);
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.callout::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(255,92,0,0.15), transparent 70%);
+}
+.callout-icon { font-size: 30px; margin-bottom: 10px; }
+.callout-title {
+  font-family: var(--font-game);
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.callout-text { font-size: 12px; color: var(--sub); line-height: 1.6; margin-bottom: 16px; }
+.callout-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  font-family: var(--font-game);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  box-shadow: 0 0 20px var(--orange-glow);
+}
+.callout-btn:hover { background: #FF7A2A; }
+
+/* LIVE TICKER in sidebar */
+.activity-feed { padding: 4px 0; }
+.act-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.act-item:last-child { border-bottom: none; }
+.act-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 6px var(--orange);
+  margin-top: 3px;
+  flex-shrink: 0;
+  animation: blink 2s ease-in-out infinite;
+}
+.act-dot.d-cyan { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+.act-dot.d-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.act-text { color: var(--sub); line-height: 1.4; }
+.act-text strong { color: var(--text); font-weight: 600; }
+.act-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ───────────────────────────────── FOOTER */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 40px 0 24px;
+}
+.footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+}
+.ft-logo {
+  font-family: var(--font-game);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ft-logo em { font-style: normal; color: var(--orange); }
+.ft-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.ft-col h4 {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--sub);
+  margin-bottom: 14px;
+}
+.ft-col a {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  transition: color 0.15s;
+}
+.ft-col a:hover { color: var(--orange); }
+.footer-bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 28px 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-bottom span { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="logo">LOAD<em>OUT</em></div>
+  <div class="nav-tabs">
+    <div class="nav-tab active"><span class="nav-icon">⚡</span> Home</div>
+    <div class="nav-tab"><span class="nav-icon">🎯</span> Jobs</div>
+    <div class="nav-tab"><span class="nav-icon">🏢</span> Studios</div>
+    <div class="nav-tab"><span class="nav-icon">📚</span> Tutorials</div>
+    <div class="nav-tab"><span class="nav-icon">📝</span> Articles</div>
+    <div class="nav-tab"><span class="nav-icon">🛠️</span> Dev Logs</div>
+  </div>
+  <div class="nav-right">
+    <button class="btn btn-outline">Post a Job</button>
+    <button class="btn btn-orange">Find Work ▶</button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-kicker">
+        <div class="kicker-dot"></div>
+        Gaming Industry Platform
+      </div>
+      <h1>
+        Level Up<br/>
+        <span class="hl">Your Career</span>
+        In Gaming
+      </h1>
+      <p class="hero-desc">
+        Jobs, tutorials, dev logs, and industry knowledge — everything a gaming professional needs in one place. Built for designers, developers, artists, and producers.
+      </p>
+      <div class="hero-cta">
+        <button class="btn btn-orange" style="font-size:16px;padding:11px 24px;">Browse 2,847 Roles ▶</button>
+        <button class="btn btn-outline" style="font-size:16px;padding:11px 24px;">Explore Content</button>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-feature-card">
+        <div class="hfc-tag">🔥 Hot Role</div>
+        <div class="hfc-title">Senior Game Designer — Riot Games</div>
+        <div class="hfc-meta">
+          <span>🌎 Remote (USA)</span>
+          <span>·</span>
+          <span style="color:var(--orange)">$120–$160k</span>
+          <span>·</span>
+          <span class="badge badge-feat">Featured</span>
+        </div>
+      </div>
+      <div class="hero-feature-card" style="border-left-color:var(--cyan)">
+        <div class="hfc-tag" style="color:var(--cyan)">📚 New Tutorial</div>
+        <div class="hfc-title">Mastering Unreal Engine 5 for AAA Environments</div>
+        <div class="hfc-meta">
+          <span>By Marcus R.</span>
+          <span>·</span>
+          <span>18 min read</span>
+        </div>
+      </div>
+      <div class="hero-stat-row">
+        <div class="hstat">
+          <div class="hstat-val">2,<span>847</span></div>
+          <div class="hstat-label">Open Roles</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val"><span>614</span></div>
+          <div class="hstat-label">Studios</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val"><span>38</span>K</div>
+          <div class="hstat-label">Members</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FILTER BAR ═══ -->
+<div class="filter-bar">
+  <div class="filter-title">Discipline</div>
+  <div class="pill active">All</div>
+  <div class="pill">🎮 Game Design</div>
+  <div class="pill">💻 Engineering</div>
+  <div class="pill">🎨 Art & VFX</div>
+  <div class="pill">📢 Marketing</div>
+  <div class="pill">🎵 Audio</div>
+  <div class="pill">📝 Writing</div>
+  <div class="pill">🎯 Production</div>
+  <div class="pill">📊 Analytics</div>
+  <div class="pill">🌐 Remote Only</div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="wrap">
+  <div>
+    <!-- JOBS -->
+    <div class="sec-header">
+      <div class="sec-title">Featured <span>Jobs</span></div>
+      <div class="sec-count">2,847 roles</div>
+      <a class="sec-more">View all →</a>
+    </div>
+
+    <div class="jobs-list">
+
+      <div class="job-card">
+        <div class="jc-logo" style="background:#0F1F14;color:#64FF4E;">RG</div>
+        <div>
+          <div class="jc-title">Senior Game Designer — Competitive Systems</div>
+          <div class="jc-meta">
+            <span class="jc-company">Riot Games</span>
+            <span class="jc-loc">🌎 Remote (USA)</span>
+          </div>
+        </div>
+        <div class="jc-right">
+          <span class="badge badge-feat">Featured</span>
+          <span class="jc-salary">$120–$160k</span>
+        </div>
+      </div>
+
+      <div class="job-card">
+        <div class="jc-logo" style="background:#1A0F0A;color:#FF8C42;">CD</div>
+        <div>
+          <div class="jc-title">Senior Narrative Designer</div>
+          <div class="jc-meta">
+            <span class="jc-company">CD Projekt RED</span>
+            <span class="jc-loc">🇵🇱 Warsaw, Poland</span>
+          </div>
+        </div>
+        <div class="jc-right">
+          <span class="badge badge-new">New</span>
+          <span class="jc-salary">Competitive</span>
+        </div>
+      </div>
+
+      <div class="job-card">
+        <div class="jc-logo" style="background:#0A0F1F;color:#4EA8FF;">V</div>
+        <div>
+          <div class="jc-title">UI/UX Designer — Live Service Games</div>
+          <div class="jc-meta">
+            <span class="jc-company">Valve Corporation</span>
+            <span class="jc-loc">🇺🇸 Bellevue, WA</span>
+          </div>
+        </div>
+        <div class="jc-right">
+          <span class="badge badge-hot">🔥 Hot</span>
+          <span class="jc-salary">$110–$145k</span>
+        </div>
+      </div>
+
+      <div class="job-card">
+        <div class="jc-logo" style="background:#1A0A1A;color:#C084FC;">EG</div>
+        <div>
+          <div class="jc-title">Technical Artist — Shaders & VFX</div>
+          <div class="jc-meta">
+            <span class="jc-company">Epic Games</span>
+            <span class="jc-loc">🌎 Remote (Global)</span>
+          </div>
+        </div>
+        <div class="jc-right">
+          <span class="badge badge-remote">Remote</span>
+          <span class="jc-salary">$100–$135k</span>
+        </div>
+      </div>
+
+      <div class="job-card">
+        <div class="jc-logo" style="background:#1A1000;color:#FBB800;">2K</div>
+        <div>
+          <div class="jc-title">Audio Designer — AAA Combat Systems</div>
+          <div class="jc-meta">
+            <span class="jc-company">2K Games</span>
+            <span class="jc-loc">🇺🇸 Novato, CA</span>
+          </div>
+        </div>
+        <div class="jc-right">
+          <span class="badge badge-new">New</span>
+          <span class="jc-salary">$90–$120k</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-grid-label">
+      <div class="cgl-tab active">Tutorials</div>
+      <div class="cgl-sep">/</div>
+      <div class="cgl-tab">Articles</div>
+      <div class="cgl-sep">/</div>
+      <div class="cgl-tab">Dev Logs</div>
+      <div class="cgl-sep">/</div>
+      <div class="cgl-tab">Guides</div>
+    </div>
+
+    <div class="content-grid">
+      <!-- FEATURED -->
+      <div class="content-card featured">
+        <div class="cc-thumb thumb-1" style="font-size:60px;">🎮</div>
+        <div class="cc-body">
+          <div class="cc-type type-tutorial">Tutorial</div>
+          <div class="cc-title">Mastering Unreal Engine 5: A Complete Environment Art Guide for AAA Games</div>
+          <div class="cc-meta">
+            <span>Marcus R.</span>
+            <div class="cc-dot"></div>
+            <span>18 min read</span>
+            <div class="cc-dot"></div>
+            <span style="color:var(--orange)">1.2k reads</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="cc-thumb thumb-2">💼</div>
+        <div class="cc-body">
+          <div class="cc-type type-guide">Guide</div>
+          <div class="cc-title">Breaking Into AAA: Portfolio Checklist for Designers</div>
+          <div class="cc-meta">
+            <span>James K.</span>
+            <div class="cc-dot"></div>
+            <span>6 min</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="cc-thumb thumb-3">🛠️</div>
+        <div class="cc-body">
+          <div class="cc-type type-devlog">Dev Log</div>
+          <div class="cc-title">Solo Dev to Steam: 18 Months Building Axiom</div>
+          <div class="cc-meta">
+            <span>Priya T.</span>
+            <div class="cc-dot"></div>
+            <span>12 min</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="cc-thumb thumb-4">💰</div>
+        <div class="cc-body">
+          <div class="cc-type type-article">Article</div>
+          <div class="cc-title">2025 Gaming Salary Report: What You Should Earn</div>
+          <div class="cc-meta">
+            <span>Loadout Team</span>
+            <div class="cc-dot"></div>
+            <span>9 min</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="cc-thumb thumb-5">🎙️</div>
+        <div class="cc-body">
+          <div class="cc-type type-guide">Guide</div>
+          <div class="cc-title">Ace the Tech Interview at Top Gaming Studios</div>
+          <div class="cc-meta">
+            <span>Sara M.</span>
+            <div class="cc-dot"></div>
+            <span>7 min</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <div class="sidebar">
+
+    <!-- LIVE ACTIVITY -->
+    <div class="side-card">
+      <div class="side-head">
+        <div class="side-title">Live Activity</div>
+      </div>
+      <div class="activity-feed">
+        <div class="act-item">
+          <div class="act-dot"></div>
+          <div>
+            <div class="act-text"><strong>Riot Games</strong> posted 4 new Design roles</div>
+            <div class="act-time">2 min ago</div>
+          </div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot d-cyan"></div>
+          <div>
+            <div class="act-text">New tutorial: <strong>Unity DOTS for Beginners</strong></div>
+            <div class="act-time">15 min ago</div>
+          </div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot d-green"></div>
+          <div>
+            <div class="act-text"><strong>MoonShift Studio</strong> joined Loadout</div>
+            <div class="act-time">1h ago</div>
+          </div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot"></div>
+          <div>
+            <div class="act-text"><strong>Epic Games</strong> updated 6 job listings</div>
+            <div class="act-time">2h ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIRING NOW -->
+    <div class="side-card">
+      <div class="side-head">
+        <div class="side-title">Hiring Now</div>
+        <a class="side-more">All studios →</a>
+      </div>
+      <div class="side-body">
+        <div class="co-row">
+          <div class="co-logo" style="background:#0F1F14;color:#64FF4E;">RG</div>
+          <div class="co-info">
+            <div class="co-name">Riot Games</div>
+            <div class="co-jobs">24 open roles</div>
+          </div>
+          <div class="co-arrow">›</div>
+        </div>
+        <div class="co-row">
+          <div class="co-logo" style="background:#1A0A1A;color:#C084FC;">EG</div>
+          <div class="co-info">
+            <div class="co-name">Epic Games</div>
+            <div class="co-jobs">38 open roles</div>
+          </div>
+          <div class="co-arrow">›</div>
+        </div>
+        <div class="co-row">
+          <div class="co-logo" style="background:#0A0F1F;color:#4EA8FF;">V</div>
+          <div class="co-info">
+            <div class="co-name">Valve</div>
+            <div class="co-jobs">11 open roles</div>
+          </div>
+          <div class="co-arrow">›</div>
+        </div>
+        <div class="co-row">
+          <div class="co-logo" style="background:#1A0F0A;color:#FF8C42;">CD</div>
+          <div class="co-info">
+            <div class="co-name">CD Projekt RED</div>
+            <div class="co-jobs">6 open roles</div>
+          </div>
+          <div class="co-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRENDING -->
+    <div class="side-card">
+      <div class="side-head">
+        <div class="side-title">Trending</div>
+      </div>
+      <div>
+        <div class="trend-row">
+          <div class="tr-num">01</div>
+          <div>
+            <div class="tr-type">Tutorial</div>
+            <div class="tr-title">UE5 Nanite & Lumen: Full Beginner Breakdown</div>
+          </div>
+        </div>
+        <div class="trend-row">
+          <div class="tr-num">02</div>
+          <div>
+            <div class="tr-type">Industry</div>
+            <div class="tr-title">Why Mid-Level Designers Are Gaming's Hottest Hire</div>
+          </div>
+        </div>
+        <div class="trend-row">
+          <div class="tr-num">03</div>
+          <div>
+            <div class="tr-type">Dev Log</div>
+            <div class="tr-title">Shipping a Roguelite on $40k — Lessons Learned</div>
+          </div>
+        </div>
+        <div class="trend-row">
+          <div class="tr-num">04</div>
+          <div>
+            <div class="tr-type">Guide</div>
+            <div class="tr-title">Remote-First vs Office: What 200 Studios Told Us</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIRE CTA -->
+    <div class="callout">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-title">Hiring Gaming Talent?</div>
+      <div class="callout-text">Reach 38,000+ gaming professionals. Post your role and get qualified candidates — not noise.</div>
+      <button class="callout-btn">Post a Job — Free ▶</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="ft-logo">LOAD<em>OUT</em></div>
+      <div class="ft-desc">The professional platform for the global gaming industry. Jobs, knowledge, community.</div>
+    </div>
+    <div class="ft-col">
+      <h4>Find Work</h4>
+      <a>Browse All Jobs</a>
+      <a>Remote Roles</a>
+      <a>Studios A–Z</a>
+      <a>Salary Guide</a>
+    </div>
+    <div class="ft-col">
+      <h4>Learn</h4>
+      <a>Tutorials</a>
+      <a>Articles</a>
+      <a>Dev Logs</a>
+      <a>Guides</a>
+    </div>
+    <div class="ft-col">
+      <h4>For Studios</h4>
+      <a>Post a Job</a>
+      <a>Studio Profile</a>
+      <a>Pricing</a>
+      <a>Newsletter</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Loadout. All rights reserved.</span>
+    <span>Privacy · Terms · Contact</span>
+  </div>
+</footer>
+
+</body>
+</html>

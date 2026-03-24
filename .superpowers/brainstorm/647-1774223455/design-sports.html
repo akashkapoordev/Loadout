@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loadout – Sports Style</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,800&family=Inter:wght@400;500;600;700&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #0D0D10;
+  --surface: #141418;
+  --surface2: #1C1C22;
+  --border: rgba(255,255,255,0.08);
+  --text: #F2F1EE;
+  --muted: rgba(242,241,238,0.45);
+  --dim: rgba(242,241,238,0.2);
+  --accent: #00E5FF;
+  --accent-dim: rgba(0,229,255,0.08);
+  --accent-glow: rgba(0,229,255,0.25);
+  --red: #FF3B3B;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── TOP BAR ─── */
+.top-bar {
+  background: var(--accent);
+  height: 3px;
+}
+
+/* ─── NAV ─── */
+nav {
+  background: #0A0A0D;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  height: 58px;
+  gap: 40px;
+}
+.logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  white-space: nowrap;
+}
+.logo-dot { color: var(--accent); }
+.nav-cats {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  height: 100%;
+}
+.nav-cats li a {
+  display: flex;
+  align-items: center;
+  height: 58px;
+  padding: 0 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.nav-cats li a:hover { color: var(--text); }
+.nav-cats li a.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-outline {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 7px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-cta {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #000;
+  background: var(--accent);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* ─── TICKER ─── */
+.ticker-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.ticker-label {
+  background: var(--red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 16px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  gap: 7px;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+.ticker-scroll { overflow: hidden; flex: 1; }
+.ticker-track {
+  display: flex;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+}
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker-item {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 0 32px 0 0;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ticker-item b { color: var(--text); font-weight: 600; }
+.ticker-sep { color: var(--accent); font-size: 8px; }
+
+/* ─── MAIN GRID ─── */
+.main-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+}
+
+/* ─── HERO FEATURE ─── */
+.hero-feature {
+  background: var(--surface);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.hero-feature:hover { border-color: rgba(255,255,255,0.14); }
+
+.hero-img {
+  height: 300px;
+  background:
+    linear-gradient(to bottom, transparent 30%, rgba(13,13,16,0.97) 100%),
+    linear-gradient(135deg, #0a1520 0%, #060d1a 30%, #0f0818 60%, #14080a 100%);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 24px 28px;
+  overflow: hidden;
+}
+/* Grid lines for depth */
+.hero-img::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+/* Glow orb */
+.hero-img::after {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: 80px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(ellipse, rgba(0,229,255,0.07) 0%, transparent 65%);
+}
+.hero-kicker {
+  position: absolute;
+  top: 20px;
+  left: 28px;
+  background: var(--accent);
+  color: #000;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+.hero-text { position: relative; z-index: 1; }
+.hero-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 8px;
+  max-width: 520px;
+}
+.hero-meta { font-size: 12px; color: var(--muted); display: flex; gap: 14px; }
+
+/* 2×2 below hero */
+.sub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.sub-card {
+  background: var(--surface);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+}
+.sub-card:hover { border-color: rgba(255,255,255,0.13); }
+.sub-thumb {
+  height: 100px;
+  position: relative;
+  overflow: hidden;
+}
+.sub-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.1) 3px,rgba(0,0,0,0.1) 4px);
+}
+.t1 { background: linear-gradient(135deg,#0D1A0A,#1A3010); }
+.t2 { background: linear-gradient(135deg,#0D0A1A,#1A1030); }
+.t3 { background: linear-gradient(135deg,#1A0A0A,#300D0D); }
+.t4 { background: linear-gradient(135deg,#0A1520,#0D2040); }
+.sub-cat {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 3px;
+  z-index: 1;
+}
+.sub-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.sub-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 8px;
+}
+.sub-footer { font-size: 11px; color: var(--dim); }
+
+/* ─── RIGHT SIDEBAR ─── */
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+/* Scoreboard-style job panel */
+.scoreboard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.scoreboard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.sb-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sb-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sb-title .live-dot { background: var(--accent); }
+.sb-link { font-size: 11px; color: var(--accent); text-decoration: none; }
+
+.job-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.job-row:last-child { border-bottom: none; }
+.job-row:hover { background: rgba(255,255,255,0.025); }
+
+.company-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.job-info { flex: 1; min-width: 0; }
+.job-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.job-co { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.job-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.new { background: rgba(0,229,255,0.1); color: var(--accent); }
+.hot { background: rgba(255,59,59,0.1); color: var(--red); }
+.feat { background: rgba(255,255,255,0.06); color: var(--dim); }
+
+/* Stats panel */
+.stats-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sp-header {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.stat-cell {
+  padding: 18px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.stat-cell:nth-child(2n) { border-right: none; }
+.stat-cell:nth-child(3),
+.stat-cell:nth-child(4) { border-bottom: none; }
+.stat-icon { font-size: 20px; }
+.stat-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.stat-lbl { font-size: 10px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+/* Discipline pills */
+.discipline-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.dp-header {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dp-tags { padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+.dp-tag {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex; align-items: center; gap: 5px;
+}
+.dp-tag:hover { color: var(--text); border-color: rgba(255,255,255,0.16); }
+.dp-tag.on { color: var(--accent); border-color: rgba(0,229,255,0.3); background: var(--accent-dim); }
+
+/* ─── PICK BAR ─── */
+.pick-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid rgba(0,229,255,0.25);
+  border-radius: 10px;
+  padding: 13px 22px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  z-index: 999;
+  box-shadow: 0 0 40px rgba(0,229,255,0.1), 0 20px 60px rgba(0,0,0,0.6);
+}
+.pick-bar span { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.pick-yes {
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: #000; background: var(--accent); border: none;
+  padding: 8px 18px; border-radius: 4px; cursor: pointer; white-space: nowrap;
+}
+.pick-no {
+  font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); background: none; border: 1px solid var(--border);
+  padding: 7px 16px; border-radius: 4px; cursor: pointer; white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Loadout<span class="logo-dot">.</span></div>
+    <ul class="nav-cats">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">Jobs</a></li>
+      <li><a href="#">Articles</a></li>
+      <li><a href="#">Guides</a></li>
+      <li><a href="#">Dev Logs</a></li>
+      <li><a href="#">Studios</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="btn-outline">Sign in</button>
+      <button class="btn-cta">Post a Job</button>
+    </div>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-label"><div class="live-dot"></div> Breaking</div>
+  <div class="ticker-scroll">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>Riot Games</b> posted 3 new engineering roles &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>Epic Games</b> · Senior UI Designer · Remote · $120k–$150k &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> New article: <b>"How I got hired at Valve without a degree"</b> · 4.1k reads &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>CD Projekt RED</b> · Technical Artist · Warsaw · Relocation offered &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> Dev log: <b>Solo survival game — day 47</b> · New post from Sarah Kim &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>Bungie</b> · Game Economy Designer · Bellevue · Hybrid &nbsp;</div>
+      <!-- duplicate -->
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>Riot Games</b> posted 3 new engineering roles &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>Epic Games</b> · Senior UI Designer · Remote · $120k–$150k &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> New article: <b>"How I got hired at Valve without a degree"</b> · 4.1k reads &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>CD Projekt RED</b> · Technical Artist · Warsaw · Relocation offered &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> Dev log: <b>Solo survival game — day 47</b> · New post from Sarah Kim &nbsp;</div>
+      <div class="ticker-item"><span class="ticker-sep">◆</span> <b>Bungie</b> · Game Economy Designer · Bellevue · Hybrid &nbsp;</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-grid">
+
+  <!-- LEFT: Content -->
+  <div>
+    <!-- Hero feature card -->
+    <div class="hero-feature">
+      <div class="hero-img">
+        <div class="hero-kicker">Featured</div>
+        <div class="hero-text">
+          <div class="hero-title">"I quit my finance job to make<br>indie games. Here's year one."</div>
+          <div class="hero-meta">
+            <span>Feature</span>
+            <span>·</span>
+            <span>20 min read</span>
+            <span>·</span>
+            <span>By Jordan Lee</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2×2 sub grid -->
+    <div class="sub-grid">
+      <div class="sub-card">
+        <div class="sub-thumb t1">
+          <div class="sub-cat" style="color:#4ADE80">Career</div>
+        </div>
+        <div class="sub-body">
+          <div class="sub-title">The skills studios are hiring for right now in 2025</div>
+          <div class="sub-footer">Loadout Team · 10 min read</div>
+        </div>
+      </div>
+      <div class="sub-card">
+        <div class="sub-thumb t2">
+          <div class="sub-cat" style="color:#818CF8">Dev Log</div>
+        </div>
+        <div class="sub-body">
+          <div class="sub-title">Building a survival game solo — month 3</div>
+          <div class="sub-footer">Sarah Kim · 8 min read</div>
+        </div>
+      </div>
+      <div class="sub-card">
+        <div class="sub-thumb t3">
+          <div class="sub-cat" style="color:#F87171">Guide</div>
+        </div>
+        <div class="sub-body">
+          <div class="sub-title">How to break into game design with no experience</div>
+          <div class="sub-footer">Loadout Team · 22 min read</div>
+        </div>
+      </div>
+      <div class="sub-card">
+        <div class="sub-thumb t4">
+          <div class="sub-cat" style="color:#38BDF8">Interview</div>
+        </div>
+        <div class="sub-body">
+          <div class="sub-title">Inside Naughty Dog's hiring process — a recruiter speaks</div>
+          <div class="sub-footer">Alex Mercer · 15 min read</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Sidebar -->
+  <div class="sidebar">
+
+    <!-- Live jobs scoreboard -->
+    <div class="scoreboard">
+      <div class="sb-header">
+        <div class="sb-title"><div class="live-dot"></div> Latest Jobs</div>
+        <a class="sb-link" href="#">All 1,247 →</a>
+      </div>
+      <div class="job-row">
+        <div class="company-badge" style="color:#FF4820">ND</div>
+        <div class="job-info">
+          <div class="job-title">Lead Narrative Designer</div>
+          <div class="job-co">Naughty Dog · LA</div>
+        </div>
+        <span class="job-badge new">New</span>
+      </div>
+      <div class="job-row">
+        <div class="company-badge" style="color:#FFA020">RG</div>
+        <div class="job-info">
+          <div class="job-title">Gameplay Engineer</div>
+          <div class="job-co">Riot Games · Remote</div>
+        </div>
+        <span class="job-badge hot">Hot</span>
+      </div>
+      <div class="job-row">
+        <div class="company-badge" style="color:#60A0FF">EP</div>
+        <div class="job-info">
+          <div class="job-title">Senior UI Designer</div>
+          <div class="job-co">Epic Games · NC</div>
+        </div>
+        <span class="job-badge feat">Featured</span>
+      </div>
+      <div class="job-row">
+        <div class="company-badge" style="color:#A060FF">CD</div>
+        <div class="job-info">
+          <div class="job-title">Technical Artist</div>
+          <div class="job-co">CD Projekt RED · Warsaw</div>
+        </div>
+        <span class="job-badge feat">Featured</span>
+      </div>
+      <div class="job-row">
+        <div class="company-badge" style="color:#40C080">BG</div>
+        <div class="job-info">
+          <div class="job-title">Economy Designer</div>
+          <div class="job-co">Bungie · Bellevue</div>
+        </div>
+        <span class="job-badge new">New</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-panel">
+      <div class="sp-header">By the numbers</div>
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-icon">💼</div>
+          <div><div class="stat-num">1,247</div><div class="stat-lbl">Open Roles</div></div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-icon">📝</div>
+          <div><div class="stat-num">340</div><div class="stat-lbl">Articles</div></div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-icon">🛠️</div>
+          <div><div class="stat-num">89</div><div class="stat-lbl">Dev Logs</div></div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-icon">🏢</div>
+          <div><div class="stat-num">200+</div><div class="stat-lbl">Studios</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disciplines -->
+    <div class="discipline-panel">
+      <div class="dp-header">Browse by discipline</div>
+      <div class="dp-tags">
+        <div class="dp-tag on">🎮 Design</div>
+        <div class="dp-tag">💻 Engineering</div>
+        <div class="dp-tag">🎨 Art &amp; VFX</div>
+        <div class="dp-tag">🔊 Audio</div>
+        <div class="dp-tag">🕹️ QA</div>
+        <div class="dp-tag">📣 Marketing</div>
+        <div class="dp-tag">🎬 Narrative</div>
+        <div class="dp-tag">⚙️ Production</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PICK BAR -->
+<div class="pick-bar">
+  <span>Right direction?</span>
+  <button class="pick-yes" onclick="this.closest('.pick-bar').innerHTML='<span style=\'color:#00E5FF;font-weight:600\'>✓ Tell Claude what to refine in the terminal</span>'">Yes →</button>
+  <button class="pick-no" onclick="this.closest('.pick-bar').innerHTML='<span style=\'color:rgba(242,241,238,0.4)\'>Tell Claude what to change</span>'">Not quite</button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loadout – Design Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0B0B0F;
+    --bg2: #111117;
+    --bg3: #18181F;
+    --border: rgba(255,255,255,0.07);
+    --text: #F1F0EC;
+    --muted: rgba(241,240,236,0.4);
+    --dim: rgba(241,240,236,0.18);
+    --accent: #FF4820;
+    --accent-dim: rgba(255,72,32,0.12);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 60px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(11,11,15,0.95);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn-ghost {
+    font-size: 13px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 7px 14px;
+  }
+  .btn-primary {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    cursor: pointer;
+    padding: 8px 18px;
+    border-radius: 6px;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 40px 72px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .hero-badge::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 36px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .hero-actions .btn-primary {
+    font-size: 14px;
+    padding: 12px 28px;
+    border-radius: 8px;
+  }
+  .hero-actions .btn-secondary {
+    font-size: 14px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 11px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  /* ── HERO STATS ── */
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -1px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--dim);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── RIGHT SIDE: FEATURED JOBS ── */
+  .hero-jobs {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .hero-jobs-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .hero-jobs-header span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .hero-jobs-header a {
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .job-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .job-item:last-child { border-bottom: none; }
+  .job-item:hover { background: rgba(255,255,255,0.03); }
+
+  .job-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    flex-shrink: 0;
+  }
+
+  .job-info { flex: 1; min-width: 0; }
+  .job-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .job-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .job-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .tag-new { background: var(--accent-dim); color: var(--accent); }
+  .tag-hot { background: rgba(255,160,32,0.12); color: #FFA020; }
+  .tag-feat { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+  /* ── CONTENT SECTION ── */
+  .section {
+    border-top: 1px solid var(--border);
+    padding: 64px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
+  }
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .section-link {
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .article-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .article-card:hover {
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-2px);
+  }
+
+  .article-thumb {
+    height: 140px;
+    display: flex;
+    align-items: flex-end;
+    padding: 14px;
+    position: relative;
+  }
+  .article-thumb-1 { background: linear-gradient(135deg, #1a0f06 0%, #2d1a0a 100%); }
+  .article-thumb-2 { background: linear-gradient(135deg, #060f1a 0%, #0a1d2d 100%); }
+  .article-thumb-3 { background: linear-gradient(135deg, #0a060f 0%, #160a1d 100%); }
+
+  .article-cat {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .article-body { padding: 16px 18px 18px; }
+  .article-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .article-author {
+    font-size: 11px;
+    color: var(--dim);
+  }
+  .article-read {
+    font-size: 11px;
+    color: var(--dim);
+  }
+
+  /* ── SELECTOR OVERLAY (for brainstorming — this is a full doc) ── */
+  .pick-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 28px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    z-index: 200;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .pick-bar span {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .pick-yes {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pick-no {
+    font-size: 13px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 7px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Loadout<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Jobs</a></li>
+    <li><a href="#">Articles</a></li>
+    <li><a href="#">Guides</a></li>
+    <li><a href="#">Dev Logs</a></li>
+    <li><a href="#">Community</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-ghost">Sign in</button>
+    <button class="btn-primary">Post a Job</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="max-width:1200px;margin:0 auto">
+  <div class="hero">
+    <div>
+      <div class="hero-badge">Now live · 1,247 open roles</div>
+      <h1>Find work<br>in the games<br><em>industry.</em></h1>
+      <p class="hero-sub">Jobs, guides, and developer stories — curated for people who work in games. Not a generic job board with a games filter.</p>
+      <div class="hero-actions">
+        <button class="btn-primary">Browse Jobs</button>
+        <button class="btn-secondary">Read Articles</button>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">1,247</div>
+          <div class="stat-label">Open Roles</div>
+        </div>
+        <div>
+          <div class="stat-num">340+</div>
+          <div class="stat-label">Articles</div>
+        </div>
+        <div>
+          <div class="stat-num">89</div>
+          <div class="stat-label">Dev Logs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-jobs">
+      <div class="hero-jobs-header">
+        <span>Latest Listings</span>
+        <a href="#">View all →</a>
+      </div>
+      <div class="job-item">
+        <div class="job-logo" style="color:#FF4820">ND</div>
+        <div class="job-info">
+          <div class="job-title">Lead Narrative Designer</div>
+          <div class="job-meta">Naughty Dog · Los Angeles · On-site</div>
+        </div>
+        <span class="job-tag tag-new">New</span>
+      </div>
+      <div class="job-item">
+        <div class="job-logo" style="color:#FFA020">RG</div>
+        <div class="job-info">
+          <div class="job-title">Gameplay Systems Engineer</div>
+          <div class="job-meta">Riot Games · Remote</div>
+        </div>
+        <span class="job-tag tag-hot">Hot</span>
+      </div>
+      <div class="job-item">
+        <div class="job-logo" style="color:#60A0FF">EP</div>
+        <div class="job-info">
+          <div class="job-title">Senior UI Designer</div>
+          <div class="job-meta">Epic Games · Cary, NC</div>
+        </div>
+        <span class="job-tag tag-feat">Featured</span>
+      </div>
+      <div class="job-item">
+        <div class="job-logo" style="color:#A060FF">CD</div>
+        <div class="job-info">
+          <div class="job-title">Technical Artist</div>
+          <div class="job-meta">CD Projekt RED · Warsaw</div>
+        </div>
+        <span class="job-tag tag-feat">Featured</span>
+      </div>
+      <div class="job-item">
+        <div class="job-logo" style="color:#40C080">BG</div>
+        <div class="job-info">
+          <div class="job-title">Game Economy Designer</div>
+          <div class="job-meta">Bungie · Bellevue, WA · Hybrid</div>
+        </div>
+        <span class="job-tag tag-new">New</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLES -->
+<div style="max-width:1200px;margin:0 auto">
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Latest Articles</h2>
+      <a href="#" class="section-link">Browse all →</a>
+    </div>
+    <div class="articles-grid">
+      <div class="article-card">
+        <div class="article-thumb article-thumb-1">
+          <span class="article-cat" style="color:#FF4820">Career</span>
+        </div>
+        <div class="article-body">
+          <div class="article-title">"I got hired at Valve without a degree — here's what actually mattered"</div>
+          <div class="article-footer">
+            <span class="article-author">Alex Mercer</span>
+            <span class="article-read">15 min read</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-thumb article-thumb-2">
+          <span class="article-cat" style="color:#60A0FF">Dev Log</span>
+        </div>
+        <div class="article-body">
+          <div class="article-title">Building a survival game solo — what month 3 looks like when you're exhausted</div>
+          <div class="article-footer">
+            <span class="article-author">Sarah Kim</span>
+            <span class="article-read">8 min read</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-thumb article-thumb-3">
+          <span class="article-cat" style="color:#A060FF">Guide</span>
+        </div>
+        <div class="article-body">
+          <div class="article-title">The complete guide to breaking into game design in 2025</div>
+          <div class="article-footer">
+            <span class="article-author">Loadout Team</span>
+            <span class="article-read">22 min read</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PICK BAR -->
+<div class="pick-bar">
+  <span>Does this design feel right?</span>
+  <button class="pick-yes" onclick="document.querySelector('.pick-bar').innerHTML='<span style=\'color:#FF4820;font-weight:600\'>✓ Marked as approved — tell Claude in the terminal</span>'">Yes, I like this →</button>
+  <button class="pick-no" onclick="document.querySelector('.pick-bar').innerHTML='<span style=\'color:rgba(241,240,236,0.4)\'>Tell Claude what to change in the terminal</span>'">Not quite</button>
+</div>
+
+</body>
+</html>
