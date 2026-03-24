@@ -10,6 +10,7 @@ import ArticlesPage from './pages/ArticlesPage'
 import DevLogsPage from './pages/DevLogsPage'
 import GuidesPage from './pages/GuidesPage'
 import ContentDetailPage from './pages/ContentDetailPage'
+import ForStudiosPage from './pages/ForStudiosPage'
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/dev-logs/:id" element={<ContentDetailPage />} />
           <Route path="/guides" element={<GuidesPage />} />
           <Route path="/guides/:id" element={<ContentDetailPage />} />
+          <Route path="/for-studios" element={<ForStudiosPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
