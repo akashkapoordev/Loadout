@@ -1,21 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useJobsInfinite } from '../hooks/useJobs'
 import JobCard from '../components/JobCard'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 import type { Discipline, ExperienceLevel, SalaryBand } from '../lib/types'
 
-const disciplines: Discipline[] = ['Game Design', 'Engineering', 'Art & VFX', 'Marketing', 'Audio', 'Writing', 'Production', 'Analytics']
+const allDisciplines: Discipline[] = ['Game Design', 'Engineering', 'Art & VFX', 'Marketing', 'Audio', 'Writing', 'Production', 'Analytics']
 const levels: ExperienceLevel[] = ['Junior', 'Mid', 'Senior', 'Lead']
 const salaryBands: SalaryBand[] = ['<$60k', '$60-100k', '$100-150k', '$150k+']
 
 export default function JobsPage() {
   const [params, setParams] = useSearchParams()
 
-  const discipline = params.get('discipline') as Discipline | null
+  const disciplinesParam = params.get('disciplines') ?? ''
+  const disciplines = disciplinesParam ? disciplinesParam.split(',') as Discipline[] : []
   const remote = params.get('remote') === 'true' ? true : undefined
   const experienceLevel = params.get('experienceLevel') as ExperienceLevel | null
   const salaryBand = params.get('salaryBand') as SalaryBand | null
+  const locationParam = params.get('location') ?? ''
+  const [locationInput, setLocationInput] = useState(locationParam)
+
+  useEffect(() => { setLocationInput(locationParam) }, [locationParam])
 
   function set(key: string, value: string | null) {
     setParams(prev => {
@@ -30,16 +35,17 @@ export default function JobsPage() {
     setParams({}, { replace: true })
   }
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useJobsInfinite({
-    discipline: discipline ?? undefined,
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useJobsInfinite({
+    disciplines: disciplines.length ? disciplines : undefined,
     remote,
     experienceLevel: experienceLevel ?? undefined,
     salaryBand: salaryBand ?? undefined,
+    location: locationParam || undefined,
   })
 
   const jobs = data?.pages.flatMap(p => p.data) ?? []
   const total = data?.pages[0]?.total ?? 0
-  const hasFilters = discipline || remote || experienceLevel || salaryBand
+  const hasFilters = disciplines.length > 0 || remote || experienceLevel || salaryBand || locationParam
   const { isMobile } = useBreakpoint()
   const [filtersOpen, setFiltersOpen] = useState(false)
 
@@ -73,23 +79,35 @@ export default function JobsPage() {
             {/* Discipline */}
             <div>
               <div style={{ fontSize: 11, fontFamily: 'var(--font-ui)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sub)', marginBottom: 12 }}>Discipline</div>
-              {disciplines.map(d => (
+              {allDisciplines.map(d => (
                 <label key={d} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }}>
                   <input
                     type="checkbox"
                     style={checkboxStyle}
-                    checked={discipline === d}
-                    onChange={e => set('discipline', e.target.checked ? d : null)}
+                    checked={disciplines.includes(d)}
+                    onChange={e => {
+                      const next = e.target.checked ? [...disciplines, d] : disciplines.filter(x => x !== d)
+                      set('disciplines', next.length ? next.join(',') : null)
+                    }}
                   />
                   <span style={{ fontSize: 13, color: 'var(--sub)' }}>{d}</span>
                 </label>
               ))}
             </div>
 
-            {/* Remote */}
+            {/* Location */}
             <div>
               <div style={{ fontSize: 11, fontFamily: 'var(--font-ui)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sub)', marginBottom: 12 }}>Location</div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input
+                type="text"
+                placeholder="City, country…"
+                value={locationInput}
+                onChange={e => setLocationInput(e.target.value)}
+                onBlur={() => set('location', locationInput || null)}
+                onKeyDown={e => e.key === 'Enter' && set('location', locationInput || null)}
+                style={{ width: '100%', padding: '7px 10px', fontSize: 13, fontFamily: 'var(--font-ui)', background: 'var(--surface)', color: 'var(--text)', border: '1px solid var(--border2)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }}
+              />
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginTop: 10 }}>
                 <input type="checkbox" style={checkboxStyle} checked={remote === true} onChange={e => set('remote', e.target.checked ? 'true' : null)} />
                 <span style={{ fontSize: 13, color: 'var(--sub)' }}>Remote Only</span>
               </label>
@@ -131,9 +149,17 @@ export default function JobsPage() {
         {/* Job list */}
         <div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {jobs.map((job, i) => <JobCard key={job.id} job={job} index={i} />)}
-            {jobs.length === 0 && (
-              <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>No roles match your filters.</div>
+            {isError ? (
+              <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>Failed to load jobs. Please try again.</div>
+            ) : !data && isLoading ? (
+              <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>Loading jobs…</div>
+            ) : (
+              <>
+                {jobs.map((job, i) => <JobCard key={job.id} job={job} index={i} />)}
+                {jobs.length === 0 && (
+                  <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>No roles match your filters.</div>
+                )}
+              </>
             )}
           </div>
 

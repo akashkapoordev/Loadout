@@ -12,9 +12,11 @@ export async function fetchJobs(filters: JobFilters = {}): Promise<PaginatedResp
   let q = supabase.from('jobs').select('*', { count: 'exact' })
 
   if (filters.discipline)      q = q.eq('discipline', filters.discipline)
+  if (filters.disciplines && filters.disciplines.length > 0) q = q.in('discipline', filters.disciplines)
   if (filters.remote !== undefined) q = q.eq('remote', filters.remote)
   if (filters.salaryBand)      q = q.eq('salary_band', filters.salaryBand)
   if (filters.experienceLevel) q = q.eq('experience_level', filters.experienceLevel)
+  if (filters.location)        q = q.ilike('location', `%${filters.location}%`)
   if (filters.studioId)        q = q.eq('studio_id', filters.studioId)
 
   const page  = filters.page  ?? 1
@@ -152,6 +154,7 @@ function mapContent(r: any): ContentItem {
     id: r.id, type: r.type, title: r.title, authorId: r.author_id,
     readTime: r.read_time, thumbnail: r.thumbnail, publishedAt: r.published_at,
     views: r.views, rating: r.rating, tags: r.tags ?? [], body: r.body ?? '',
+    sourceUrl: r.source_url ?? undefined,
   }
 }
 

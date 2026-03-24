@@ -1,12 +1,28 @@
+import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useStudios } from '../hooks/useStudios'
+import { useJobs } from '../hooks/useJobs'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 
 export default function StudiosPage() {
-  const { data, isLoading } = useStudios()
+  const { data, isLoading, isError } = useStudios()
   const studios = data?.data ?? []
 
+  const { data: jobsData } = useJobs({ limit: 500 })
+  const allJobs = jobsData?.data ?? []
+  const rolesByStudio = useMemo(() => {
+    const map: Record<string, number> = {}
+    allJobs.forEach(j => { map[j.studioId] = (map[j.studioId] ?? 0) + 1 })
+    return map
+  }, [allJobs])
+
+  const { isMobile } = useBreakpoint()
+  const [search, setSearch] = useState('')
+
+  const filtered = studios.filter(s => s.name.toLowerCase().includes(search.toLowerCase()))
+
   return (
-    <div style={{ paddingInline: 40, paddingTop: 32, paddingBottom: 60 }}>
+    <div style={{ paddingInline: isMobile ? 20 : 40, paddingTop: isMobile ? 20 : 32, paddingBottom: 60 }}>
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 900, color: 'var(--text)', letterSpacing: '-1px', marginBottom: 4 }}>
           STUDIOS
@@ -16,55 +32,71 @@ export default function StudiosPage() {
 
       {isLoading ? (
         <div style={{ color: 'var(--muted)' }}>Loading…</div>
+      ) : isError ? (
+        <div style={{ padding: 40, color: 'var(--muted)' }}>Failed to load studios. Please try again.</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
-          {studios.map(studio => (
-            <Link
-              key={studio.id}
-              to={`/studios/${studio.id}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <div style={{
-                border: '1px solid var(--border)',
-                borderRadius: 12,
-                padding: 20,
-                background: 'var(--surface)',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                height: '100%',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
-                  <div style={{
-                    width: 52, height: 52, borderRadius: 10,
-                    background: studio.logoBg, border: '1px solid var(--border)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14, fontFamily: 'var(--font-display)', fontWeight: 900,
-                    color: studio.logoColor, flexShrink: 0,
-                  }}>
-                    {studio.logoInitials}
+        <>
+          <input
+            type="text"
+            placeholder="Search studios…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: '100%', maxWidth: 320, padding: '8px 12px', fontSize: 13, fontFamily: 'var(--font-ui)', background: 'var(--surface)', color: 'var(--text)', border: '1px solid var(--border2)', borderRadius: 6, outline: 'none', marginBottom: 24, boxSizing: 'border-box' }}
+          />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+            {filtered.map(studio => (
+              <Link
+                key={studio.id}
+                to={`/studios/${studio.id}`}
+                style={{ textDecoration: 'none' }}
+              >
+                <div style={{
+                  border: '1px solid var(--border)',
+                  borderRadius: 12,
+                  padding: 20,
+                  background: 'var(--surface)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  height: '100%',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+                    <div style={{
+                      width: 52, height: 52, borderRadius: 10,
+                      background: studio.logoBg, border: '1px solid var(--border)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 14, fontFamily: 'var(--font-display)', fontWeight: 900,
+                      color: studio.logoColor, flexShrink: 0,
+                    }}>
+                      {studio.logoInitials}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{studio.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--muted)' }}>📍 {studio.location}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{studio.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--muted)' }}>📍 {studio.location}</div>
-                  </div>
-                </div>
-                <p style={{ fontSize: 13, color: 'var(--sub)', lineHeight: 1.5, marginBottom: 16 }}>
-                  {studio.description.slice(0, 120)}…
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    {studio.disciplines.slice(0, 3).map(d => (
-                      <span key={d} style={{ fontSize: 10, fontFamily: 'var(--font-ui)', fontWeight: 700, padding: '2px 8px', background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 4, color: 'var(--muted)' }}>
-                        {d}
+                  <p style={{ fontSize: 13, color: 'var(--sub)', lineHeight: 1.5, marginBottom: 16 }}>
+                    {studio.description.slice(0, 120)}…
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {studio.disciplines.slice(0, 3).map(d => (
+                        <span key={d} style={{ fontSize: 10, fontFamily: 'var(--font-ui)', fontWeight: 700, padding: '2px 8px', background: 'var(--surface2)', border: '1px solid var(--border2)', borderRadius: 4, color: 'var(--muted)' }}>
+                          {d}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                      <span style={{ fontSize: 11, color: 'var(--muted)' }}>
+                        {rolesByStudio[studio.id] ?? 0} open role{(rolesByStudio[studio.id] ?? 0) !== 1 ? 's' : ''}
                       </span>
-                    ))}
+                      <span style={{ fontSize: 12, color: 'var(--orange)', fontWeight: 600 }}>View roles →</span>
+                    </div>
                   </div>
-                  <span style={{ fontSize: 12, color: 'var(--orange)', fontWeight: 600 }}>View roles →</span>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

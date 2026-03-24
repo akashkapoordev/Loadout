@@ -2,20 +2,22 @@ import { useParams, Link } from 'react-router-dom'
 import { useStudio, useStudioJobs } from '../hooks/useStudios'
 import JobCard from '../components/JobCard'
 import PageHeader from '../components/PageHeader'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 
 export default function StudioDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { data: studioData, isLoading } = useStudio(id!)
+  const { data: studioData, isLoading, isError } = useStudio(id!)
   const { data: jobsData } = useStudioJobs(id!)
 
   const studio = studioData?.data
   const jobs = jobsData?.data ?? []
+  const { isMobile } = useBreakpoint()
 
   if (isLoading) return <div style={{ padding: 40, color: 'var(--muted)' }}>Loading…</div>
-  if (!studio) return <div style={{ padding: 40, color: 'var(--muted)' }}>Studio not found.</div>
+  if (isError || !studio) return <div style={{ padding: 40, color: 'var(--muted)' }}>Studio not found.</div>
 
   return (
-    <div style={{ paddingInline: 40, paddingTop: 32, paddingBottom: 60 }}>
+    <div style={{ paddingInline: isMobile ? 20 : 40, paddingTop: 32, paddingBottom: 60 }}>
       <Link to="/studios" style={{ fontSize: 13, color: 'var(--orange)', textDecoration: 'none', display: 'inline-block', marginBottom: 24 }}>← Back to Studios</Link>
 
       {/* Studio header */}
@@ -29,6 +31,8 @@ export default function StudioDetailPage() {
             <span>📍 {studio.location}</span>
             {studio.founded && <span>Est. {studio.founded}</span>}
             {studio.website && <a href={studio.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>Website ↗</a>}
+            {studio.twitter && <a href={`https://twitter.com/${studio.twitter}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>Twitter ↗</a>}
+            {studio.linkedin && <a href={studio.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>LinkedIn ↗</a>}
           </div>
           <p style={{ fontSize: 14, color: 'var(--sub)', lineHeight: 1.6, maxWidth: 600 }}>{studio.description}</p>
         </div>
@@ -49,7 +53,7 @@ export default function StudioDetailPage() {
       </div>
 
       {/* Two-col: jobs + sidebar */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 40 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 280px', gap: 40 }}>
         <div>
           <PageHeader title={`Open Roles at ${studio.name}`} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

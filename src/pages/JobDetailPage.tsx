@@ -3,21 +3,24 @@ import { useJob } from '../hooks/useJobs'
 import { useJobs } from '../hooks/useJobs'
 import JobCard from '../components/JobCard'
 import PageHeader from '../components/PageHeader'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 
 export default function JobDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { data, isLoading } = useJob(id!)
+  const { data, isLoading, isError } = useJob(id!)
   const job = data?.data
+  const { isMobile } = useBreakpoint()
 
   const { data: relatedData } = useJobs({ discipline: job?.discipline, limit: 4 })
   const related = relatedData?.data.filter(j => j.id !== id).slice(0, 3) ?? []
 
   if (isLoading) return <div style={{ padding: 40, color: 'var(--muted)' }}>Loading…</div>
+  if (isError) return <div style={{ padding: 40, color: 'var(--muted)' }}>Failed to load job. Please try again.</div>
   if (!job) return <div style={{ padding: 40, color: 'var(--muted)' }}>Job not found.</div>
 
   return (
-    <div style={{ paddingInline: 40, paddingTop: 32, paddingBottom: 60 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 48 }}>
+    <div style={{ paddingInline: isMobile ? 20 : 40, paddingTop: 32, paddingBottom: 60 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 320px', gap: 48 }}>
 
         {/* Main content */}
         <div>
@@ -65,12 +68,20 @@ export default function JobDetailPage() {
           <div style={{ position: 'sticky', top: 72, display: 'flex', flexDirection: 'column', gap: 32 }}>
             <div style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 20, background: 'var(--surface)' }}>
               <div style={{ fontSize: 11, fontFamily: 'var(--font-ui)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--sub)', marginBottom: 16 }}>Job Details</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 12, color: 'var(--muted)' }}>Studio</span>
+                {job.studioId ? (
+                  <Link to={`/studios/${job.studioId}`} style={{ fontSize: 12, fontWeight: 600, color: 'var(--orange)', textDecoration: 'none' }}>{job.company}</Link>
+                ) : (
+                  <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: 600 }}>{job.company}</span>
+                )}
+              </div>
               {[
-                ['Studio', job.company],
                 ['Location', job.remote ? 'Remote' : job.location],
                 ['Discipline', job.discipline],
                 ['Level', job.experienceLevel],
                 ...(job.salary ? [['Salary', job.salary]] : []),
+                ['Posted', new Date(job.postedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })],
               ].map(([label, val]) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
                   <span style={{ fontSize: 12, color: 'var(--muted)' }}>{label}</span>

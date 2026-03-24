@@ -22,10 +22,11 @@ export interface ContentItem {
   rating: number
   tags: string[]
   body: string
+  sourceUrl?: string
 }
 
 export interface ContentItemWithAuthor extends ContentItem {
-  author: Author
+  author?: Author
 }
 
 export type Discipline =
@@ -111,9 +112,11 @@ export interface SingleResponse<T> {
 
 export interface JobFilters {
   discipline?: Discipline
+  disciplines?: Discipline[]
   remote?: boolean
   salaryBand?: SalaryBand
   experienceLevel?: ExperienceLevel
+  location?: string
   studioId?: string
   page?: number
   limit?: number

@@ -56,17 +56,27 @@ export default function ContentCard({ item, featured = false }: Props) {
       }}
     >
       {/* Thumbnail */}
-      <div style={{
-        width: '100%',
-        height: featured ? 180 : 120,
-        background: thumbGradients[item.type],
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: featured ? 40 : 32,
-      }}>
-        {typeEmoji[item.type]}
-      </div>
+      {item.thumbnail ? (
+        <div style={{
+          width: '100%',
+          height: featured ? 180 : 120,
+          backgroundImage: `url(${item.thumbnail})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }} />
+      ) : (
+        <div style={{
+          width: '100%',
+          height: featured ? 180 : 120,
+          background: thumbGradients[item.type],
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: featured ? 40 : 32,
+        }}>
+          {typeEmoji[item.type]}
+        </div>
+      )}
 
       {/* Body */}
       <div style={{ padding: 14 }}>
@@ -93,7 +103,7 @@ export default function ContentCard({ item, featured = false }: Props) {
           <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--border2)', display: 'inline-block' }} />
           <span>{item.readTime} min read</span>
           <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--border2)', display: 'inline-block' }} />
-          <span>{(item.views / 1000).toFixed(1)}k views</span>
+          {item.views > 0 && <span>{(item.views / 1000).toFixed(1)}k views</span>}
         </div>
       </div>
     </motion.div>

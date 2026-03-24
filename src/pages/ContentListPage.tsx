@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useContentInfinite } from '../hooks/useContent'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 import ContentCard from '../components/ContentCard'
@@ -33,20 +33,39 @@ interface Props {
 
 export default function ContentListPage({ type }: Props) {
   const config = typeConfig[type]
-  const [activeTags, setActiveTags] = useState<string[]>([])
-  const [sort, setSort] = useState<'latest' | 'most-viewed' | 'top-rated'>('latest')
+  const [params, setParams] = useSearchParams()
   const { isMobile, isTablet } = useBreakpoint()
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useContentInfinite({
+  const sort = (params.get('sort') ?? 'latest') as 'latest' | 'most-viewed' | 'top-rated'
+  const tagsParam = params.get('tags') ?? ''
+  const activeTags = tagsParam ? tagsParam.split(',') : []
+
+  function setSort(value: 'latest' | 'most-viewed' | 'top-rated') {
+    setParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.set('sort', value)
+      return next
+    }, { replace: true })
+  }
+
+  function toggleTag(tag: string) {
+    setParams(prev => {
+      const next = new URLSearchParams(prev)
+      const current = (next.get('tags') ?? '').split(',').filter(Boolean)
+      const updated = current.includes(tag) ? current.filter(t => t !== tag) : [...current, tag]
+      if (updated.length > 0) next.set('tags', updated.join(','))
+      else next.delete('tags')
+      return next
+    }, { replace: true })
+  }
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError } = useContentInfinite({
     type,
     tags: activeTags.length > 0 ? activeTags : undefined,
     sort,
   })
 
   const items = data?.pages.flatMap(p => p.data) ?? []
-
-  const toggleTag = (tag: string) =>
-    setActiveTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])
 
   return (
     <div style={{ paddingInline: isMobile ? 20 : 40, paddingTop: 32, paddingBottom: 60 }}>
@@ -83,7 +102,7 @@ export default function ContentListPage({ type }: Props) {
 
         <select
           value={sort}
-          onChange={e => setSort(e.target.value as typeof sort)}
+          onChange={e => setSort(e.target.value as 'latest' | 'most-viewed' | 'top-rated')}
           style={{ padding: '6px 12px', fontSize: 12, fontFamily: 'var(--font-ui)', fontWeight: 600, background: 'var(--surface)', color: 'var(--sub)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer' }}
         >
           <option value="latest">Latest</option>
@@ -92,22 +111,31 @@ export default function ContentListPage({ type }: Props) {
         </select>
       </div>
 
-      {/* Featured */}
-      {items.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <ContentCard item={items[0]} featured />
-        </div>
-      )}
+      {/* Content area: loading / error / results */}
+      {isError ? (
+        <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>Failed to load content. Please try again.</div>
+      ) : !data ? (
+        <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>Loading…</div>
+      ) : (
+        <>
+          {/* Featured */}
+          {items.length > 0 && (
+            <div style={{ marginBottom: 24 }}>
+              <ContentCard item={items[0]} featured />
+            </div>
+          )}
 
-      {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
-        {items.slice(1).map(item => (
-          <ContentCard key={item.id} item={item} />
-        ))}
-      </div>
+          {/* Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
+            {items.slice(1).map(item => (
+              <ContentCard key={item.id} item={item} />
+            ))}
+          </div>
 
-      {items.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--muted)' }}>No content found.</div>
+          {items.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--muted)' }}>No content found.</div>
+          )}
+        </>
       )}
 
       {hasNextPage && (

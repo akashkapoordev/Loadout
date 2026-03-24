@@ -93,7 +93,7 @@ export default function JobCard({ job, index = 0 }: Props) {
       {/* Badges + salary */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: 4 }}>
-          {job.tags.slice(0, 2).map(tag => {
+          {job.tags.filter(tag => badgeStyle[tag]).slice(0, 2).map(tag => {
             const s = badgeStyle[tag]
             return (
               <span key={tag} style={{
