@@ -51,9 +51,9 @@ export default function Footer() {
           {
             title: 'For Studios',
             links: [
-              { to: '#', label: 'Post a Job' },
-              { to: '#', label: 'Studio Profile' },
-              { to: '#', label: 'Pricing' },
+              { to: '/for-studios', label: 'Post a Job' },
+              { to: '/for-studios', label: 'Studio Profile' },
+              { to: '/for-studios', label: 'Pricing' },
             ],
           },
         ].map(col => (

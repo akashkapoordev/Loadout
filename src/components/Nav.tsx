@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 
@@ -16,6 +16,7 @@ const links = [
 export default function Nav() {
   const { isMobile } = useBreakpoint()
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
 
   const linkStyle = (isActive: boolean) => ({
     padding: '6px 14px',
@@ -79,10 +80,10 @@ export default function Nav() {
               ))}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-              <button style={{ padding: '7px 16px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'transparent', color: 'var(--sub)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer' }}>
+              <button onClick={() => navigate('/for-studios')} style={{ padding: '7px 16px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'transparent', color: 'var(--sub)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer' }}>
                 Post a Job
               </button>
-              <button style={{ padding: '7px 18px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)', boxShadow: '0 0 20px rgba(255,92,0,0.35)', cursor: 'pointer' }}>
+              <button onClick={() => navigate('/jobs')} style={{ padding: '7px 18px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)', boxShadow: '0 0 20px rgba(255,92,0,0.35)', cursor: 'pointer' }}>
                 Find Work ▶
               </button>
             </div>
@@ -124,10 +125,10 @@ export default function Nav() {
               </NavLink>
             ))}
             <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-              <button style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'transparent', color: 'var(--sub)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer' }}>
+              <button onClick={() => { navigate('/for-studios'); setOpen(false) }} style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'transparent', color: 'var(--sub)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer' }}>
                 Post a Job
               </button>
-              <button style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer' }}>
+              <button onClick={() => { navigate('/jobs'); setOpen(false) }} style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer' }}>
                 Find Work ▶
               </button>
             </div>

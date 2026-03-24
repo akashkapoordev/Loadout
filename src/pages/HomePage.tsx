@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useJobs } from '../hooks/useJobs'
 import { useStudios } from '../hooks/useStudios'
-import { useContent } from '../hooks/useContent'
+import { useContent, useFeatured } from '../hooks/useContent'
 import { useStats } from '../hooks/useStats'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 import LiveTicker from '../components/LiveTicker'
@@ -25,19 +25,30 @@ const contentTabs: Array<{ label: string; type: ContentType }> = [
 ]
 
 export default function HomePage() {
+  const navigate = useNavigate()
   const [discipline, setDiscipline] = useState<Discipline | null>(null)
   const [activeTab, setActiveTab] = useState<ContentType>('tutorial')
   const { isMobile, isTablet } = useBreakpoint()
   const isNarrow = isMobile || isTablet
 
-  const { data: jobsData } = useJobs({ discipline: discipline ?? undefined, limit: 6 })
+  const { data: jobsData, isLoading: jobsLoading } = useJobs({ discipline: discipline ?? undefined, limit: 6 })
+  const { data: allJobsData } = useJobs({ limit: 500 })
   const { data: studiosData } = useStudios()
-  const { data: contentData } = useContent({ type: activeTab, limit: 5 })
+  const { data: contentData, isLoading: contentLoading } = useContent({ type: activeTab, limit: 5 })
   const { data: statsData } = useStats()
+  const { data: featuredData } = useFeatured()
 
   const jobs = jobsData?.data ?? []
+  const allJobs = allJobsData?.data ?? []
   const studios = (studiosData?.data ?? []).slice(0, 4)
+
+  const rolesByStudio = useMemo(() => {
+    const map: Record<string, number> = {}
+    allJobs.forEach(j => { map[j.studioId] = (map[j.studioId] ?? 0) + 1 })
+    return map
+  }, [allJobs])
   const contentItems = contentData?.data ?? []
+  const featured = featuredData?.data
   const stats = statsData?.data
 
   return (
@@ -91,10 +102,10 @@ export default function HomePage() {
           style={{ border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', background: 'var(--surface)', minWidth: isNarrow ? 'auto' : 200, flexShrink: 0, width: isNarrow ? '100%' : 'auto', display: isNarrow ? 'grid' : 'block', gridTemplateColumns: isMobile ? '1fr 1fr' : undefined }}
         >
           {[
-            { val: stats ? stats.openRoles.toLocaleString() : '847', label: 'Open Roles' },
-            { val: stats ? stats.studios.toLocaleString() : '214', label: 'Studios Listed' },
-            { val: stats ? stats.members.toLocaleString() : '38,500', label: 'Professionals' },
-            { val: stats ? stats.articles.toLocaleString() : '1,290', label: 'Articles Published' },
+            { val: stats ? stats.openRoles.toLocaleString() : '—', label: 'Open Roles' },
+            { val: stats ? stats.studios.toLocaleString() : '—', label: 'Studios Listed' },
+            { val: stats ? stats.members.toLocaleString() : '—', label: 'Professionals' },
+            { val: stats ? stats.articles.toLocaleString() : '—', label: 'Articles Published' },
           ].map((s, i, arr) => (
             <div key={s.label} style={{ padding: '16px 20px', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none', textAlign: 'right' }}>
               <div style={{ fontSize: 28, fontFamily: 'var(--font-display)', fontWeight: 900, letterSpacing: '-1px', color: 'var(--orange)', lineHeight: 1, marginBottom: 2 }}>{s.val}</div>
@@ -125,7 +136,11 @@ export default function HomePage() {
             }
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 40 }}>
-            {jobs.map((job, i) => <JobCard key={job.id} job={job} index={i} />)}
+            {jobsLoading ? (
+              <div style={{ color: 'var(--muted)', fontSize: 13 }}>Loading jobs…</div>
+            ) : (
+              jobs.map((job, i) => <JobCard key={job.id} job={job} index={i} />)
+            )}
           </div>
 
           {/* Content tabs */}
@@ -149,13 +164,17 @@ export default function HomePage() {
             ))}
           </div>
 
-          {contentItems.length > 0 && (
+          {contentLoading ? (
+            <div style={{ color: 'var(--muted)', fontSize: 13 }}>Loading content…</div>
+          ) : (featured || contentItems.length > 0) && (
             <div>
-              <div style={{ marginBottom: 16 }}>
-                <ContentCard item={contentItems[0]} featured />
-              </div>
+              {featured && (
+                <div style={{ marginBottom: 16 }}>
+                  <ContentCard item={featured} featured />
+                </div>
+              )}
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16 }}>
-                {contentItems.slice(1, 5).map(item => (
+                {contentItems.filter(c => c.id !== featured?.id).slice(0, 4).map(item => (
                   <ContentCard key={item.id} item={item} />
                 ))}
               </div>
@@ -183,7 +202,7 @@ export default function HomePage() {
               }
             />
             <div>
-              {studios.map(s => <StudioRow key={s.id} studio={s} />)}
+              {studios.map(s => <StudioRow key={s.id} studio={{ ...s, openRoles: rolesByStudio[s.id] ?? 0 }} />)}
             </div>
           </div>
 
@@ -199,6 +218,7 @@ export default function HomePage() {
             title="Hiring Game Talent?"
             description="Post your open roles on Loadout and reach thousands of gaming professionals actively looking for work."
             buttonLabel="Post a Job →"
+            onClick={() => navigate('/for-studios')}
           />
         </div>
       </div>
