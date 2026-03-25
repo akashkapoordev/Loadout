@@ -109,7 +109,7 @@ export default function ForStudiosPage() {
                 value={email}
                 aria-describedby={validationError ? 'email-error' : undefined}
                 aria-invalid={!!validationError}
-                onChange={e => { setEmail(e.target.value); setValidationError(''); if (formState === 'error' || formState === 'duplicate') setFormState('idle') }}
+                onChange={e => { setEmail(e.target.value); setValidationError(''); if (formState === 'error') setFormState('idle') }}
                 style={{
                   flex: 1, padding: '10px 14px', fontSize: 14,
                   fontFamily: 'var(--font-ui)', background: 'var(--bg)',

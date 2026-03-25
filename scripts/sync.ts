@@ -203,7 +203,7 @@ async function syncJobs() {
   if (newRows.length > 0) {
     const activities = newRows.slice(0, 10).map(j => ({
       type:      'job_posted',
-      message:   `${j.company} posted ${j.title}`,
+      message:   `posted ${j.title}`,
       highlight: j.company,
       color:     'orange',
     }))
@@ -313,7 +313,7 @@ async function syncReddit() {
 
   if (newRows.length > 0) {
     const activities = newRows.slice(0, 5).map((a: any) => ({
-      type: 'content_published', message: `New post: ${a.title}`, highlight: a.title, color: 'cyan',
+      type: 'content_published', message: 'New post', highlight: a.title, color: 'cyan',
     }))
     await supabase.from('activity_items').insert(activities)
   }
@@ -497,7 +497,7 @@ async function syncContent() {
     }
     const activities = newRows.slice(0, 10).map(a => ({
       type:      'content_published',
-      message:   `${typeLabel[a.type] ?? 'New post'}: ${a.title}`,
+      message:   typeLabel[a.type] ?? 'New post',
       highlight: a.title,
       color:     'cyan',
     }))
@@ -597,7 +597,7 @@ async function syncJobsGreenhouse() {
 
   if (newRows.length > 0) {
     const activities = newRows.slice(0, 10).map(j => ({
-      type: 'job_posted', message: `${j.company} posted ${j.title}`, highlight: j.company, color: 'orange',
+      type: 'job_posted', message: `posted ${j.title}`, highlight: j.company, color: 'orange',
     }))
     await supabase.from('activity_items').insert(activities)
   }
@@ -723,7 +723,7 @@ async function syncJobsArbeitnow() {
   if (newRows.length > 0) {
     const activities = newRows.slice(0, 10).map(j => ({
       type:      'job_posted',
-      message:   `${j.company} posted ${j.title}`,
+      message:   `posted ${j.title}`,
       highlight: j.company,
       color:     'orange',
     }))

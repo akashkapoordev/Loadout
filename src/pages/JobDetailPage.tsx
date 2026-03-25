@@ -6,6 +6,12 @@ import JobCard from '../components/JobCard'
 import PageHeader from '../components/PageHeader'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 
+function decodeHtml(s: string): string {
+  const el = document.createElement('textarea')
+  el.innerHTML = s
+  return el.value
+}
+
 export default function JobDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { data, isLoading, isError } = useJob(id!)
@@ -49,9 +55,11 @@ export default function JobDetailPage() {
           </div>
 
           {/* Description */}
-          <div style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.7, marginBottom: 40 }}>
-            {job.description}
-          </div>
+          <div
+            className="job-description"
+            style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.7, marginBottom: 40 }}
+            dangerouslySetInnerHTML={{ __html: decodeHtml(job.description) }}
+          />
 
           {/* Apply CTA */}
           <a
@@ -106,6 +114,19 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
+      <style>{`
+        .job-description h1,.job-description h2,.job-description h3,.job-description h4 {
+          color: var(--text); font-family: var(--font-display); font-weight: 700;
+          margin: 20px 0 8px;
+        }
+        .job-description h2 { font-size: 18px; }
+        .job-description h3 { font-size: 16px; }
+        .job-description p  { margin: 0 0 12px; }
+        .job-description ul,.job-description ol { padding-left: 20px; margin: 0 0 12px; }
+        .job-description li { margin-bottom: 4px; }
+        .job-description a  { color: var(--orange); }
+        .job-description strong { color: var(--text); }
+      `}</style>
     </div>
   )
 }

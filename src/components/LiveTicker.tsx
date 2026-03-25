@@ -37,7 +37,7 @@ export default function LiveTicker() {
         borderRadius: 3,
         flexShrink: 0,
       }}>
-        Live
+        New
       </div>
 
       <div style={{ overflow: 'hidden', flex: 1 }}>

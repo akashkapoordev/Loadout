@@ -41,7 +41,15 @@ export default function HomePage() {
   const { data: featuredData } = useFeatured()
 
   const jobs = jobsData?.data ?? []
-  const studios = (studiosData?.data ?? []).slice(0, 4)
+  const allStudios = studiosData?.data ?? []
+
+  const studioRoles = (s: { id: string; name: string }) =>
+    (rolesByStudio[s.id] ?? 0) || (rolesByStudio[s.name.toLowerCase().trim()] ?? 0)
+
+  const studios = allStudios
+    .filter(s => studioRoles(s) > 0)
+    .sort((a, b) => studioRoles(b) - studioRoles(a))
+    .slice(0, 4)
   const contentItems = contentData?.data ?? []
   const featured = featuredData?.data
   const stats = statsData?.data
@@ -81,8 +89,8 @@ export default function HomePage() {
             </Link>
             <Link to="/studios" style={{
               padding: '10px 22px', fontSize: 14, fontFamily: 'var(--font-ui)', fontWeight: 700,
-              background: 'transparent', color: 'var(--sub)', textDecoration: 'none',
-              border: '1px solid var(--border2)', borderRadius: 7,
+              background: 'rgba(255,255,255,0.06)', color: 'var(--text)', textDecoration: 'none',
+              border: '1px solid rgba(255,255,255,0.18)', borderRadius: 7,
             }}>
               Explore Studios
             </Link>
@@ -197,7 +205,7 @@ export default function HomePage() {
               }
             />
             <div>
-              {studios.map(s => <StudioRow key={s.id} studio={{ ...s, openRoles: rolesByStudio[s.id] ?? 0 }} />)}
+              {studios.map(s => <StudioRow key={s.id} studio={{ ...s, openRoles: studioRoles(s) }} />)}
             </div>
           </div>
 

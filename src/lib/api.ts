@@ -128,13 +128,23 @@ export async function fetchStats(): Promise<SingleResponse<PlatformStats>> {
 }
 
 // ─── STUDIO JOB COUNTS ───────────────────────────────────────
+// Jobs synced from external APIs always have studio_id=null, so we also
+// build a secondary map keyed by normalised company name for name-matching.
 
 export async function fetchJobStudioCounts(): Promise<Record<string, number>> {
-  const { data, error } = await supabase.from('jobs').select('studio_id')
+  const { data, error } = await supabase.from('jobs').select('studio_id, company')
   if (error) throw error
   const counts: Record<string, number> = {}
   for (const row of data ?? []) {
-    if (row.studio_id) counts[row.studio_id] = (counts[row.studio_id] ?? 0) + 1
+    // Prefer explicit FK link
+    if (row.studio_id) {
+      counts[row.studio_id] = (counts[row.studio_id] ?? 0) + 1
+    }
+    // Also index by normalised company name as fallback
+    if (row.company) {
+      const key = row.company.toLowerCase().trim()
+      counts[key] = (counts[key] ?? 0) + 1
+    }
   }
   return counts
 }
