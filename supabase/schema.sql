@@ -87,17 +87,26 @@ insert into platform_stats (id, open_roles, studios, members, articles)
 values (1, 0, 0, 0, 0)
 on conflict (id) do nothing;
 
--- ─── ROW LEVEL SECURITY (read-only public) ──────────────────
-alter table studios enable row level security;
-alter table authors enable row level security;
-alter table jobs enable row level security;
-alter table content_items enable row level security;
-alter table activity_items enable row level security;
-alter table platform_stats enable row level security;
+-- ─── STUDIO WAITLIST ────────────────────────────────────────
+create table if not exists studio_waitlist (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  created_at timestamptz not null default now()
+);
 
-create policy "public read studios"       on studios       for select using (true);
-create policy "public read authors"       on authors       for select using (true);
-create policy "public read jobs"          on jobs          for select using (true);
-create policy "public read content"       on content_items for select using (true);
-create policy "public read activity"      on activity_items for select using (true);
-create policy "public read stats"         on platform_stats for select using (true);
+-- ─── ROW LEVEL SECURITY ─────────────────────────────────────
+alter table studios          enable row level security;
+alter table authors          enable row level security;
+alter table jobs             enable row level security;
+alter table content_items    enable row level security;
+alter table activity_items   enable row level security;
+alter table platform_stats   enable row level security;
+alter table studio_waitlist  enable row level security;
+
+create policy "public read studios"       on studios          for select using (true);
+create policy "public read authors"       on authors          for select using (true);
+create policy "public read jobs"          on jobs             for select using (true);
+create policy "public read content"       on content_items    for select using (true);
+create policy "public read activity"      on activity_items   for select using (true);
+create policy "public read stats"         on platform_stats   for select using (true);
+create policy "anon insert waitlist"      on studio_waitlist  for insert with check (true);
