@@ -1,20 +1,16 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useStudios } from '../hooks/useStudios'
-import { useJobs } from '../hooks/useJobs'
+import { useJobStudioCounts } from '../hooks/useJobs'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 
 export default function StudiosPage() {
+  useEffect(() => { document.title = 'Studios — Loadout' }, [])
+
   const { data, isLoading, isError } = useStudios()
   const studios = data?.data ?? []
 
-  const { data: jobsData } = useJobs({ limit: 500 })
-  const allJobs = jobsData?.data ?? []
-  const rolesByStudio = useMemo(() => {
-    const map: Record<string, number> = {}
-    allJobs.forEach(j => { map[j.studioId] = (map[j.studioId] ?? 0) + 1 })
-    return map
-  }, [allJobs])
+  const { data: rolesByStudio = {} } = useJobStudioCounts()
 
   const { isMobile } = useBreakpoint()
   const [search, setSearch] = useState('')

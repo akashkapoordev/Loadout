@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useJob } from '../hooks/useJobs'
 import { useJobs } from '../hooks/useJobs'
 import JobCard from '../components/JobCard'
@@ -10,6 +11,10 @@ export default function JobDetailPage() {
   const { data, isLoading, isError } = useJob(id!)
   const job = data?.data
   const { isMobile } = useBreakpoint()
+
+  useEffect(() => {
+    if (job) document.title = `${job.title} at ${job.company} — Loadout`
+  }, [job])
 
   const { data: relatedData } = useJobs({ discipline: job?.discipline, limit: 4 })
   const related = relatedData?.data.filter(j => j.id !== id).slice(0, 3) ?? []

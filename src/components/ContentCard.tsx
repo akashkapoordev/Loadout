@@ -41,7 +41,10 @@ export default function ContentCard({ item, featured = false }: Props) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
+      role="button"
+      tabIndex={0}
       onClick={() => navigate(path)}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(path)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

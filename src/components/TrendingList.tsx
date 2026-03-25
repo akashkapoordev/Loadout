@@ -17,7 +17,10 @@ export default function TrendingList() {
         return (
           <div
             key={item.id}
+            role="button"
+            tabIndex={0}
             onClick={() => navigate(path)}
+            onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(path)}
             style={{
               display: 'flex',
               alignItems: 'flex-start',

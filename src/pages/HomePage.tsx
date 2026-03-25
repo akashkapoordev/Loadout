@@ -1,7 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useJobs } from '../hooks/useJobs'
+import { useJobs, useJobStudioCounts } from '../hooks/useJobs'
 import { useStudios } from '../hooks/useStudios'
 import { useContent, useFeatured } from '../hooks/useContent'
 import { useStats } from '../hooks/useStats'
@@ -28,25 +28,20 @@ export default function HomePage() {
   const navigate = useNavigate()
   const [discipline, setDiscipline] = useState<Discipline | null>(null)
   const [activeTab, setActiveTab] = useState<ContentType>('tutorial')
+  useEffect(() => { document.title = 'Loadout — Level Up Your Career In Gaming' }, [])
+
   const { isMobile, isTablet } = useBreakpoint()
   const isNarrow = isMobile || isTablet
 
   const { data: jobsData, isLoading: jobsLoading } = useJobs({ discipline: discipline ?? undefined, limit: 6 })
-  const { data: allJobsData } = useJobs({ limit: 500 })
   const { data: studiosData } = useStudios()
+  const { data: rolesByStudio = {} } = useJobStudioCounts()
   const { data: contentData, isLoading: contentLoading } = useContent({ type: activeTab, limit: 5 })
   const { data: statsData } = useStats()
   const { data: featuredData } = useFeatured()
 
   const jobs = jobsData?.data ?? []
-  const allJobs = allJobsData?.data ?? []
   const studios = (studiosData?.data ?? []).slice(0, 4)
-
-  const rolesByStudio = useMemo(() => {
-    const map: Record<string, number> = {}
-    allJobs.forEach(j => { map[j.studioId] = (map[j.studioId] ?? 0) + 1 })
-    return map
-  }, [allJobs])
   const contentItems = contentData?.data ?? []
   const featured = featuredData?.data
   const stats = statsData?.data

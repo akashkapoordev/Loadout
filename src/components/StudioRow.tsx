@@ -12,7 +12,10 @@ export default function StudioRow({ studio }: Props) {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={() => navigate(`/studios/${studio.id}`)}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/studios/${studio.id}`)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

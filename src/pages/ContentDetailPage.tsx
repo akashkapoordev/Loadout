@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useContentItem, useContent } from '../hooks/useContent'
 import ContentCard from '../components/ContentCard'
 import ContentTypeBadge from '../components/ContentTypeBadge'
@@ -17,6 +18,10 @@ export default function ContentDetailPage() {
   })
   const related = relatedData?.data.filter(c => c.id !== id).slice(0, 3) ?? []
   const { isMobile } = useBreakpoint()
+
+  useEffect(() => {
+    if (item) document.title = `${item.title} — Loadout`
+  }, [item])
 
   if (isLoading) return <div style={{ padding: 40, color: 'var(--muted)' }}>Loading…</div>
   if (isError) return <div style={{ padding: 40, color: 'var(--muted)' }}>Failed to load content. Please try again.</div>

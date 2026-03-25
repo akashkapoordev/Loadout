@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useStudio, useStudioJobs } from '../hooks/useStudios'
 import JobCard from '../components/JobCard'
 import PageHeader from '../components/PageHeader'
@@ -12,6 +13,10 @@ export default function StudioDetailPage() {
   const studio = studioData?.data
   const jobs = jobsData?.data ?? []
   const { isMobile } = useBreakpoint()
+
+  useEffect(() => {
+    if (studio) document.title = `${studio.name} — Loadout`
+  }, [studio])
 
   if (isLoading) return <div style={{ padding: 40, color: 'var(--muted)' }}>Loading…</div>
   if (isError || !studio) return <div style={{ padding: 40, color: 'var(--muted)' }}>Studio not found.</div>

@@ -127,6 +127,18 @@ export async function fetchStats(): Promise<SingleResponse<PlatformStats>> {
   return { data: { openRoles: data.open_roles, studios: data.studios, members: data.members, articles: data.articles } }
 }
 
+// ─── STUDIO JOB COUNTS ───────────────────────────────────────
+
+export async function fetchJobStudioCounts(): Promise<Record<string, number>> {
+  const { data, error } = await supabase.from('jobs').select('studio_id')
+  if (error) throw error
+  const counts: Record<string, number> = {}
+  for (const row of data ?? []) {
+    if (row.studio_id) counts[row.studio_id] = (counts[row.studio_id] ?? 0) + 1
+  }
+  return counts
+}
+
 // ─── MAPPERS (snake_case DB → camelCase TS) ──────────────────
 
 function mapJob(r: any): Job {

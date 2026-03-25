@@ -34,7 +34,10 @@ export default function JobCard({ job, index = 0 }: Props) {
       variants={jobCardVariants}
       initial="hidden"
       animate="visible"
+      role="button"
+      tabIndex={0}
       onClick={() => navigate(`/jobs/${job.id}`)}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && navigate(`/jobs/${job.id}`)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

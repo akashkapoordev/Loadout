@@ -1,5 +1,5 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
-import { fetchJobs, fetchJob } from '../lib/api'
+import { fetchJobs, fetchJob, fetchJobStudioCounts } from '../lib/api'
 import type { JobFilters } from '../lib/types'
 
 export function useJobs(filters: JobFilters = {}) {
@@ -14,6 +14,13 @@ export function useJob(id: string) {
     queryKey: ['jobs', id],
     queryFn: () => fetchJob(id),
     enabled: !!id,
+  })
+}
+
+export function useJobStudioCounts() {
+  return useQuery({
+    queryKey: ['job-studio-counts'],
+    queryFn: fetchJobStudioCounts,
   })
 }
 

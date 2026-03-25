@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useContentInfinite } from '../hooks/useContent'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 import ContentCard from '../components/ContentCard'
@@ -33,6 +34,8 @@ interface Props {
 
 export default function ContentListPage({ type }: Props) {
   const config = typeConfig[type]
+  useEffect(() => { document.title = `${config.title.charAt(0) + config.title.slice(1).toLowerCase()} — Loadout` }, [config.title])
+
   const [params, setParams] = useSearchParams()
   const { isMobile, isTablet } = useBreakpoint()
 

@@ -10,6 +10,8 @@ const levels: ExperienceLevel[] = ['Junior', 'Mid', 'Senior', 'Lead']
 const salaryBands: SalaryBand[] = ['<$60k', '$60-100k', '$100-150k', '$150k+']
 
 export default function JobsPage() {
+  useEffect(() => { document.title = 'Jobs — Loadout' }, [])
+
   const [params, setParams] = useSearchParams()
 
   const disciplinesParam = params.get('disciplines') ?? ''
