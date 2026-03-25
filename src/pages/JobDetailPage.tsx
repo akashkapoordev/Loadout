@@ -64,6 +64,8 @@ export default function JobDetailPage() {
           {/* Apply CTA */}
           <a
             href={job.applyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '12px 28px', fontSize: 15, fontFamily: 'var(--font-ui)', fontWeight: 700,
