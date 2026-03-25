@@ -1,6 +1,15 @@
 import { useParams, Link } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useContentItem, useContent } from '../hooks/useContent'
+
+function isSafeUrl(url: string): boolean {
+  try {
+    const { protocol } = new URL(url)
+    return protocol === 'https:' || protocol === 'http:'
+  } catch {
+    return false
+  }
+}
 import ContentCard from '../components/ContentCard'
 import ContentTypeBadge from '../components/ContentTypeBadge'
 import TrendingList from '../components/TrendingList'
@@ -208,7 +217,7 @@ export default function ContentDetailPage() {
                         Twitter ↗
                       </a>
                     )}
-                    {item.author.linkedin && (
+                    {item.author.linkedin && isSafeUrl(item.author.linkedin) && (
                       <a href={item.author.linkedin} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, fontFamily: 'var(--font-ui)', fontWeight: 700, color: 'var(--orange)', textDecoration: 'none' }}>
                         LinkedIn ↗
                       </a>

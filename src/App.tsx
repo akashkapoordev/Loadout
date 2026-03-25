@@ -13,6 +13,7 @@ const DevLogsPage       = lazy(() => import('./pages/DevLogsPage'))
 const GuidesPage        = lazy(() => import('./pages/GuidesPage'))
 const ContentDetailPage = lazy(() => import('./pages/ContentDetailPage'))
 const ForStudiosPage    = lazy(() => import('./pages/ForStudiosPage'))
+const NotFoundPage      = lazy(() => import('./pages/NotFoundPage'))
 
 function PageLoader() {
   return <div style={{ padding: 40, color: 'var(--muted)', fontFamily: 'var(--font-ui)', fontSize: 13 }}>Loading…</div>
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/guides"        element={<GuidesPage />} />
             <Route path="/guides/:id"    element={<ContentDetailPage />} />
             <Route path="/for-studios"   element={<ForStudiosPage />} />
+            <Route path="*"              element={<NotFoundPage />} />
           </Route>
         </Routes>
       </Suspense>

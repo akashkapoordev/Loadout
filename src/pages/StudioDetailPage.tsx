@@ -1,6 +1,15 @@
 import { useParams, Link } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useStudio, useStudioJobs } from '../hooks/useStudios'
+
+function isSafeUrl(url: string): boolean {
+  try {
+    const { protocol } = new URL(url)
+    return protocol === 'https:' || protocol === 'http:'
+  } catch {
+    return false
+  }
+}
 import JobCard from '../components/JobCard'
 import PageHeader from '../components/PageHeader'
 import { useBreakpoint } from '../hooks/useBreakpoint'
@@ -19,7 +28,8 @@ export default function StudioDetailPage() {
   }, [studio])
 
   if (isLoading) return <div style={{ padding: 40, color: 'var(--muted)' }}>Loading…</div>
-  if (isError || !studio) return <div style={{ padding: 40, color: 'var(--muted)' }}>Studio not found.</div>
+  if (isError) return <div style={{ padding: 40, color: 'var(--muted)' }}>Failed to load studio. Please try again.</div>
+  if (!studio) return <div style={{ padding: 40, color: 'var(--muted)' }}>Studio not found.</div>
 
   return (
     <div style={{ paddingInline: isMobile ? 20 : 40, paddingTop: 32, paddingBottom: 60 }}>
@@ -35,9 +45,9 @@ export default function StudioDetailPage() {
           <div style={{ display: 'flex', gap: 16, fontSize: 14, color: 'var(--sub)', marginBottom: 12 }}>
             <span>📍 {studio.location}</span>
             {studio.founded && <span>Est. {studio.founded}</span>}
-            {studio.website && <a href={studio.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>Website ↗</a>}
+            {studio.website && isSafeUrl(studio.website) && <a href={studio.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>Website ↗</a>}
             {studio.twitter && <a href={`https://twitter.com/${studio.twitter}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>Twitter ↗</a>}
-            {studio.linkedin && <a href={studio.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>LinkedIn ↗</a>}
+            {studio.linkedin && isSafeUrl(studio.linkedin) && <a href={studio.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--orange)', textDecoration: 'none' }}>LinkedIn ↗</a>}
           </div>
           <p style={{ fontSize: 14, color: 'var(--sub)', lineHeight: 1.6, maxWidth: 600 }}>{studio.description}</p>
         </div>

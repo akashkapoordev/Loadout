@@ -1,15 +1,24 @@
 import { useParams, Link } from 'react-router-dom'
 import { useEffect } from 'react'
-import { useJob } from '../hooks/useJobs'
-import { useJobs } from '../hooks/useJobs'
+import DOMPurify from 'dompurify'
+import { useJob, useJobs } from '../hooks/useJobs'
 import JobCard from '../components/JobCard'
 import PageHeader from '../components/PageHeader'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 
-function decodeHtml(s: string): string {
-  const el = document.createElement('textarea')
-  el.innerHTML = s
-  return el.value
+function sanitizeDescription(html: string): string {
+  const decoded = document.createElement('textarea')
+  decoded.innerHTML = html
+  return DOMPurify.sanitize(decoded.value)
+}
+
+function isSafeUrl(url: string): boolean {
+  try {
+    const { protocol } = new URL(url)
+    return protocol === 'https:' || protocol === 'http:'
+  } catch {
+    return false
+  }
 }
 
 export default function JobDetailPage() {
@@ -58,24 +67,26 @@ export default function JobDetailPage() {
           <div
             className="job-description"
             style={{ fontSize: 15, color: 'var(--sub)', lineHeight: 1.7, marginBottom: 40 }}
-            dangerouslySetInnerHTML={{ __html: decodeHtml(job.description) }}
+            dangerouslySetInnerHTML={{ __html: sanitizeDescription(job.description) }}
           />
 
           {/* Apply CTA */}
-          <a
-            href={job.applyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '12px 28px', fontSize: 15, fontFamily: 'var(--font-ui)', fontWeight: 700,
-              background: 'var(--orange)', color: '#fff', textDecoration: 'none',
-              clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)',
-              boxShadow: '0 0 24px rgba(255,92,0,0.4)',
-            }}
-          >
-            Apply Now ▶
-          </a>
+          {isSafeUrl(job.applyUrl) && (
+            <a
+              href={job.applyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '12px 28px', fontSize: 15, fontFamily: 'var(--font-ui)', fontWeight: 700,
+                background: 'var(--orange)', color: '#fff', textDecoration: 'none',
+                clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)',
+                boxShadow: '0 0 24px rgba(255,92,0,0.4)',
+              }}
+            >
+              Apply Now ▶
+            </a>
+          )}
         </div>
 
         {/* Sidebar */}
