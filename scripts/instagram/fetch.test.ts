@@ -2,10 +2,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock supabase client
+const resolveWith = (data: unknown[]) => ({
+  order: () => ({
+    limit: () => Promise.resolve({ data, error: null }),
+  }),
+})
+
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     from: (table: string) => ({
       select: () => ({
+        eq: () => resolveWith([]),
         order: () => ({
           limit: () => Promise.resolve({
             data: table === 'jobs'
@@ -14,11 +21,11 @@ vi.mock('@supabase/supabase-js', () => ({
                    apply_url: 'https://ea.com/jobs/1', salary_band: '$60-100k' }]
               : [],
             error: null,
-          })
-        })
-      })
-    })
-  })
+          }),
+        }),
+      }),
+    }),
+  }),
 }))
 
 import { fetchJobs, fetchContent, fetchStudios } from './fetch'

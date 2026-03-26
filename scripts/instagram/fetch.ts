@@ -52,11 +52,11 @@ export async function fetchContent(type: 'tutorial' | 'devlog', limit = 20): Pro
   const { data, error } = await supabase
     .from('content_items')
     .select('*')
+    .eq('type', type)
     .order('published_at', { ascending: false })
     .limit(limit)
   if (error) throw new Error(`fetchContent(${type}): ${error.message}`)
-  const rows = (data ?? []) as DbContent[]
-  return rows.filter(r => r.type === type)
+  return (data ?? []) as DbContent[]
 }
 
 export async function fetchStudios(limit = 20): Promise<DbStudio[]> {

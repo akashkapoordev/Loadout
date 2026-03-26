@@ -86,4 +86,5 @@ export interface UsedIds {
   tutorial: string[]
   'studio-feature': string[]
   'dev-log': string[]
+  _statIndex?: number
 }

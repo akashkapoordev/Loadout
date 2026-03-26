@@ -55,7 +55,7 @@ async function main() {
   console.log(`  Jobs: ${jobs.length}, Tutorials: ${tutorials.length}, Studios: ${studios.length}, DevLogs: ${devlogs.length}\n`)
 
   // Pick stat (cycle through seed list)
-  const statIndex = (used as any)._statIndex ?? 0
+  const statIndex = used._statIndex ?? 0
   const statSeed = STATS[statIndex % STATS.length]
 
   // Pick content avoiding duplicates
@@ -141,7 +141,7 @@ async function main() {
   }})
 
   // Save updated dedup state
-  ;(used as any)._statIndex = statIndex + 1
+  used = { ...used, _statIndex: statIndex + 1 }
   saveUsed(used)
 
   const batch: WeeklyBatch = { weekLabel, posts }

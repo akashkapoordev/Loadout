@@ -112,7 +112,8 @@ function studioCard(p: StudioPost): string {
 
 function statCard(p: StatPost): string {
   const color = TAG_COLORS['industry-stat']
-  const match = p.stat.match(/^([\d]+%?(?:\+|x)?)/)
+  // Match leading number/percentage/dollar formats: "73%", "$180B+", "3x", "1 in 4"
+  const match = p.stat.match(/^(\$?[\d]+[A-Z]*%?(?:\+|x)?)/)
   const bigNum = match ? match[1] : ''
   const rest = bigNum ? p.stat.slice(bigNum.length).trim() : p.stat
 

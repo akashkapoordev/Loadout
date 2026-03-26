@@ -8,7 +8,7 @@ const USED_FILE = path.resolve('instagram/.used.json')
 type HasId = { id: string }
 
 export function freshUsed(): UsedIds {
-  return { 'job-spotlight': [], tutorial: [], 'studio-feature': [], 'dev-log': [] }
+  return { 'job-spotlight': [], tutorial: [], 'studio-feature': [], 'dev-log': [], _statIndex: 0 }
 }
 
 export function loadUsed(): UsedIds {
