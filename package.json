@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "sync": "tsx scripts/sync.ts"
+    "sync": "tsx scripts/sync.ts",
+    "instagram": "tsx scripts/instagram.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.0",
@@ -16,6 +17,7 @@
     "@types/dompurify": "^3.0.5",
     "dompurify": "^3.3.3",
     "framer-motion": "^12.38.0",
+    "puppeteer": "^24.40.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.2"
