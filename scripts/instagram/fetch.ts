@@ -50,7 +50,7 @@ export async function fetchJobs(limit = 20): Promise<DbJob[]> {
 
 export async function fetchContent(type: 'tutorial' | 'devlog', limit = 20): Promise<DbContent[]> {
   const { data, error } = await supabase
-    .from('content')
+    .from('content_items')
     .select('*')
     .order('published_at', { ascending: false })
     .limit(limit)

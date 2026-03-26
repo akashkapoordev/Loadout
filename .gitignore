@@ -30,3 +30,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Instagram pipeline output
+/instagram/
+
+# Superpowers local workspace
+.superpowers/
