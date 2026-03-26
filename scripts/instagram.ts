@@ -8,7 +8,7 @@ import { buildCard } from './instagram/cards'
 import { buildCaption } from './instagram/captions'
 import { htmlToPng } from './instagram/export'
 import { buildCalendar } from './instagram/calendar'
-import type { WeeklyBatch, WeekPost, PostData, UsedIds } from './instagram/types'
+import type { WeeklyBatch, WeekPost, PostData } from './instagram/types'
 
 // ─── Industry stats seed ────────────────────────────────────────────────────
 

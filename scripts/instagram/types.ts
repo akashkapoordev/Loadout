@@ -81,6 +81,8 @@ export interface WeeklyBatch {
   posts: WeekPost[]
 }
 
+export type ContentBucket = 'job-spotlight' | 'tutorial' | 'studio-feature' | 'dev-log'
+
 export interface UsedIds {
   'job-spotlight': string[]
   tutorial: string[]

@@ -1,7 +1,7 @@
 // scripts/instagram/select.ts
 import fs from 'fs'
 import path from 'path'
-import type { UsedIds } from './types'
+import type { UsedIds, ContentBucket } from './types'
 
 const USED_FILE = path.resolve('instagram/.used.json')
 
@@ -25,7 +25,7 @@ export function saveUsed(used: UsedIds): void {
   fs.writeFileSync(USED_FILE, JSON.stringify(used, null, 2))
 }
 
-export function markUsed(used: UsedIds, type: keyof UsedIds, id: string): UsedIds {
+export function markUsed(used: UsedIds, type: ContentBucket, id: string): UsedIds {
   const bucket = used[type]
   if (bucket.includes(id)) return used
   return { ...used, [type]: [...bucket, id] }
@@ -33,7 +33,7 @@ export function markUsed(used: UsedIds, type: keyof UsedIds, id: string): UsedId
 
 export function pickUnused<T extends HasId>(
   items: T[],
-  type: keyof UsedIds,
+  type: ContentBucket,
   used: UsedIds
 ): T | null {
   if (items.length === 0) return null

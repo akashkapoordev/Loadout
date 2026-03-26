@@ -1,5 +1,5 @@
 // scripts/instagram/fetch.test.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 // Mock supabase client
 const resolveWith = (data: unknown[]) => ({

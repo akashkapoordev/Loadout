@@ -1,6 +1,6 @@
 // scripts/instagram/select.test.ts
 import { describe, it, expect } from 'vitest'
-import { pickUnused, markUsed, loadUsed, freshUsed } from './select'
+import { pickUnused, markUsed, freshUsed } from './select'
 import type { UsedIds } from './types'
 
 const baseUsed: UsedIds = {
