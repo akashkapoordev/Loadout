@@ -60,7 +60,7 @@ export async function fetchStudioJobs(id: string): Promise<PaginatedResponse<Job
 // ─── CONTENT ─────────────────────────────────────────────────
 
 export async function fetchContent(filters: ContentFilters = {}): Promise<PaginatedResponse<ContentItem>> {
-  let q = supabase.from('content_items').select('*', { count: 'exact' })
+  let q = supabase.from('public_content_items').select('*', { count: 'exact' })
 
   if (filters.type) q = q.eq('type', filters.type)
   if (filters.tags && filters.tags.length > 0) q = q.overlaps('tags', filters.tags)
@@ -81,23 +81,25 @@ export async function fetchContent(filters: ContentFilters = {}): Promise<Pagina
 }
 
 export async function fetchContentItem(id: string): Promise<SingleResponse<ContentItemWithAuthor>> {
-  const { data, error } = await supabase
-    .from('content_items').select('*, authors(*)').eq('id', id).single()
+  const { data: item, error } = await supabase
+    .from('public_content_items').select('*').eq('id', id).maybeSingle()
   if (error) throw error
-  const { authors: author, ...item } = data as any
-  return { data: { ...mapContent(item), author: author ? mapAuthor(author) : undefined } as ContentItemWithAuthor }
+  if (!item) throw new Error('Content not found')
+  const { data: author } = await supabase
+    .from('authors').select('*').eq('id', item.author_id).single()
+  return { data: { ...mapContent(item), author: author ? mapAuthor(author) : undefined } }
 }
 
 export async function fetchTrending(): Promise<SingleResponse<ContentItem[]>> {
   const { data, error } = await supabase
-    .from('content_items').select('*').order('views', { ascending: false }).limit(4)
+    .from('public_content_items').select('*').order('views', { ascending: false }).limit(4)
   if (error) throw error
   return { data: (data ?? []).map(mapContent) }
 }
 
 export async function fetchFeatured(): Promise<SingleResponse<ContentItem>> {
   const { data, error } = await supabase
-    .from('content_items').select('*').order('rating', { ascending: false }).limit(1).single()
+    .from('public_content_items').select('*').order('rating', { ascending: false }).limit(1).single()
   if (error) throw error
   return { data: mapContent(data) }
 }
@@ -175,8 +177,11 @@ function mapContent(r: any): ContentItem {
   return {
     id: r.id, type: r.type, title: r.title, authorId: r.author_id,
     readTime: r.read_time, thumbnail: r.thumbnail, publishedAt: r.published_at,
-    views: r.views, rating: r.rating, tags: r.tags ?? [], body: r.body ?? '',
+    views: r.views, rating: r.rating, tags: r.tags ?? [],
+    body: r.body ?? null,
+    bodyTeaser: r.body_teaser ?? '',
     sourceUrl: r.source_url ?? undefined,
+    isPremium: r.is_premium ?? false,
   }
 }
 
