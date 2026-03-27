@@ -15,6 +15,9 @@ import ContentTypeBadge from '../components/ContentTypeBadge'
 import TrendingList from '../components/TrendingList'
 import PageHeader from '../components/PageHeader'
 import { useBreakpoint } from '../hooks/useBreakpoint'
+import CarbonAd from '../components/CarbonAd'
+import AffiliateLink from '../components/AffiliateLink'
+import { getAffiliatesForType } from '../lib/affiliates'
 
 export default function ContentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -108,6 +111,13 @@ export default function ContentDetailPage() {
             </div>
           </div>
 
+          {/* Carbon Ad — mobile only; desktop version lives in the sidebar */}
+          {isMobile && (
+            <div style={{ marginBottom: 24 }}>
+              <CarbonAd />
+            </div>
+          )}
+
           {item.thumbnail ? (
             <div style={{ height: 200, borderRadius: 12, backgroundImage: `url(${item.thumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: 32 }} />
           ) : (
@@ -191,11 +201,42 @@ export default function ContentDetailPage() {
               </span>
             ))}
           </div>
+
+          {/* Recommended Resources */}
+          {getAffiliatesForType(item.type).length > 0 && (
+            <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
+              <div style={{
+                fontSize: 11,
+                fontFamily: 'var(--font-ui)',
+                fontWeight: 700,
+                letterSpacing: '2px',
+                textTransform: 'uppercase' as const,
+                color: 'var(--muted)',
+                marginBottom: 16,
+              }}>
+                Recommended Resources
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {getAffiliatesForType(item.type).map(a => (
+                  <AffiliateLink
+                    key={a.label}
+                    label={a.label}
+                    description={a.description}
+                    href={a.href}
+                    cta={a.cta}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
         <div>
           <div style={{ position: 'sticky', top: 72, display: 'flex', flexDirection: 'column', gap: 32 }}>
+
+            {/* Carbon Ad — desktop only; mobile version is above the thumbnail */}
+            {!isMobile && <CarbonAd />}
 
             {/* Author card */}
             {item.author && (
