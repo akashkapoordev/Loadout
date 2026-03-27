@@ -150,7 +150,7 @@ export default function JobsPage() {
 
         {/* Job list */}
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {isError ? (
               <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--muted)' }}>Failed to load jobs. Please try again.</div>
             ) : !data && isLoading ? (
