@@ -39,14 +39,6 @@ export default function AuthModal({ onClose }: Props) {
     }
   }
 
-  async function handleGoogle() {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href },
-    })
-    // Page will navigate — modal closes naturally
-  }
-
   const tabStyle = (active: boolean) => ({
     flex: 1,
     padding: '10px 0',
@@ -97,28 +89,6 @@ export default function AuthModal({ onClose }: Props) {
           <button style={tabStyle(tab === 'signin')} onClick={() => { setTab('signin'); setError('') }}>Sign In</button>
           <button style={tabStyle(tab === 'signup')} onClick={() => { setTab('signup'); setError('') }}>Sign Up</button>
         </div>
-
-        {/* Google OAuth */}
-        <button
-          onClick={handleGoogle}
-          style={{
-            width: '100%',
-            padding: '10px 0',
-            fontSize: 13,
-            fontFamily: 'var(--font-ui)',
-            fontWeight: 700,
-            background: 'var(--surface)',
-            color: 'var(--text)',
-            border: '1px solid var(--border2)',
-            borderRadius: 8,
-            cursor: 'pointer',
-            marginBottom: 16,
-          }}
-        >
-          Continue with Google
-        </button>
-
-        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--muted)', marginBottom: 16 }}>or</div>
 
         {/* Email form */}
         <form onSubmit={handleEmailSubmit}>
