@@ -16,6 +16,7 @@ import TrendingList from '../components/TrendingList'
 import PageHeader from '../components/PageHeader'
 import { useBreakpoint } from '../hooks/useBreakpoint'
 import CarbonAd from '../components/CarbonAd'
+import GoogleAd from '../components/GoogleAd'
 import AffiliateLink from '../components/AffiliateLink'
 import { getAffiliatesForType } from '../lib/affiliates'
 
@@ -115,6 +116,7 @@ export default function ContentDetailPage() {
           {isMobile && (
             <div style={{ marginBottom: 24 }}>
               <CarbonAd />
+              <GoogleAd />
             </div>
           )}
 
@@ -235,8 +237,9 @@ export default function ContentDetailPage() {
         <div>
           <div style={{ position: 'sticky', top: 72, display: 'flex', flexDirection: 'column', gap: 32 }}>
 
-            {/* Carbon Ad — desktop only; mobile version is above the thumbnail */}
+            {/* Carbon Ad / Google Ad — desktop only; mobile version is above the thumbnail */}
             {!isMobile && <CarbonAd />}
+            {!isMobile && <GoogleAd />}
 
             {/* Author card */}
             {item.author && (
