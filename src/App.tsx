@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import { AuthProvider } from './context/AuthContext'
 
 const HomePage          = lazy(() => import('./pages/HomePage'))
 const JobsPage          = lazy(() => import('./pages/JobsPage'))
@@ -14,6 +15,8 @@ const GuidesPage        = lazy(() => import('./pages/GuidesPage'))
 const ContentDetailPage = lazy(() => import('./pages/ContentDetailPage'))
 const ForStudiosPage    = lazy(() => import('./pages/ForStudiosPage'))
 const NotFoundPage      = lazy(() => import('./pages/NotFoundPage'))
+const PremiumPage        = lazy(() => import('./pages/PremiumPage'))
+const PremiumSuccessPage = lazy(() => import('./pages/PremiumSuccessPage'))
 
 function PageLoader() {
   return <div style={{ padding: 40, color: 'var(--muted)', fontFamily: 'var(--font-ui)', fontSize: 13 }}>Loading…</div>
@@ -21,6 +24,7 @@ function PageLoader() {
 
 export default function App() {
   return (
+    <AuthProvider>
     <BrowserRouter>
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -39,10 +43,13 @@ export default function App() {
             <Route path="/guides"        element={<GuidesPage />} />
             <Route path="/guides/:id"    element={<ContentDetailPage />} />
             <Route path="/for-studios"   element={<ForStudiosPage />} />
+            <Route path="/premium"         element={<PremiumPage />} />
+            <Route path="/premium/success" element={<PremiumSuccessPage />} />
             <Route path="*"              element={<NotFoundPage />} />
           </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
+    </AuthProvider>
   )
 }
