@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBreakpoint } from '../hooks/useBreakpoint'
+import { useAuth } from '../context/AuthContext'
 
 const links = [
   { to: '/', label: 'Home', end: true },
@@ -17,6 +18,7 @@ export default function Nav() {
   const { isMobile } = useBreakpoint()
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const { user, isPremium, openAuthModal, signOut, openCheckoutOrAuth } = useAuth()
 
   const linkStyle = (isActive: boolean) => ({
     padding: '6px 14px',
@@ -83,9 +85,21 @@ export default function Nav() {
               <button onClick={() => navigate('/for-studios')} style={{ padding: '7px 16px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'transparent', color: 'var(--sub)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer' }}>
                 Post a Job
               </button>
-              <button onClick={() => navigate('/jobs')} style={{ padding: '7px 18px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)', boxShadow: '0 0 20px rgba(255,92,0,0.35)', cursor: 'pointer' }}>
-                Find Work ▶
-              </button>
+              {user ? (
+                <UserDropdown
+                  isPremium={isPremium}
+                  initials={user.email?.[0]?.toUpperCase() ?? '?'}
+                  onUpgrade={openCheckoutOrAuth}
+                  onSignOut={signOut}
+                />
+              ) : (
+                <button
+                  onClick={openAuthModal}
+                  style={{ padding: '7px 18px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)', boxShadow: '0 0 20px rgba(255,92,0,0.35)', cursor: 'pointer' }}
+                >
+                  Sign In ▶
+                </button>
+              )}
             </div>
           </>
         )}
@@ -128,13 +142,98 @@ export default function Nav() {
               <button onClick={() => { navigate('/for-studios'); setOpen(false) }} style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'transparent', color: 'var(--sub)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer' }}>
                 Post a Job
               </button>
-              <button onClick={() => { navigate('/jobs'); setOpen(false) }} style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer' }}>
-                Find Work ▶
-              </button>
+              {user ? (
+                <button
+                  onClick={() => { signOut(); setOpen(false) }}
+                  style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'transparent', color: 'var(--muted)', border: '1px solid var(--border2)', borderRadius: 7, cursor: 'pointer', marginTop: 0 }}
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <button
+                  onClick={() => { openAuthModal(); setOpen(false) }}
+                  style={{ flex: 1, padding: '10px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', borderRadius: 7, cursor: 'pointer', marginTop: 0 }}
+                >
+                  Sign In ▶
+                </button>
+              )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
+  )
+}
+
+interface UserDropdownProps {
+  isPremium: boolean
+  initials: string
+  onUpgrade: () => void
+  onSignOut: () => Promise<void>
+}
+
+function UserDropdown({ isPremium, initials, onUpgrade, onSignOut }: UserDropdownProps) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: 34, height: 34,
+          borderRadius: '50%',
+          background: 'var(--surface)',
+          border: '1px solid var(--border2)',
+          color: 'var(--orange)',
+          fontFamily: 'var(--font-ui)',
+          fontWeight: 700,
+          fontSize: 13,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {isPremium ? '★' : initials}
+      </button>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 50 }} />
+          <div style={{
+            position: 'absolute', top: 40, right: 0, zIndex: 51,
+            background: 'var(--bg)',
+            border: '1px solid var(--border)',
+            borderRadius: 10,
+            padding: '6px 0',
+            minWidth: 180,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+          }}>
+            {!isPremium && (
+              <button
+                onClick={() => { setOpen(false); onUpgrade() }}
+                style={{ display: 'block', width: '100%', padding: '10px 16px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'none', border: 'none', color: 'var(--orange)', textAlign: 'left', cursor: 'pointer' }}
+              >
+                ★ Upgrade to Premium
+              </button>
+            )}
+            {isPremium && (
+              <button
+                onClick={() => setOpen(false)}
+                style={{ display: 'block', width: '100%', padding: '10px 16px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'none', border: 'none', color: 'var(--text)', textAlign: 'left', cursor: 'pointer' }}
+              >
+                ★ Premium Member
+              </button>
+            )}
+            <div style={{ borderTop: '1px solid var(--border)', margin: '4px 0' }} />
+            <button
+              onClick={() => { setOpen(false); onSignOut() }}
+              style={{ display: 'block', width: '100%', padding: '10px 16px', fontSize: 13, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'none', border: 'none', color: 'var(--muted)', textAlign: 'left', cursor: 'pointer' }}
+            >
+              Sign Out
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   )
 }
