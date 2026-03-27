@@ -17,6 +17,8 @@ const ForStudiosPage    = lazy(() => import('./pages/ForStudiosPage'))
 const NotFoundPage      = lazy(() => import('./pages/NotFoundPage'))
 const PremiumPage        = lazy(() => import('./pages/PremiumPage'))
 const PremiumSuccessPage = lazy(() => import('./pages/PremiumSuccessPage'))
+const PostAJobPage       = lazy(() => import('./pages/PostAJobPage'))
+const PostAJobSuccessPage = lazy(() => import('./pages/PostAJobSuccessPage'))
 
 function PageLoader() {
   return <div style={{ padding: 40, color: 'var(--muted)', fontFamily: 'var(--font-ui)', fontSize: 13 }}>Loading…</div>
@@ -43,8 +45,10 @@ export default function App() {
             <Route path="/guides"        element={<GuidesPage />} />
             <Route path="/guides/:id"    element={<ContentDetailPage />} />
             <Route path="/for-studios"   element={<ForStudiosPage />} />
-            <Route path="/premium"         element={<PremiumPage />} />
-            <Route path="/premium/success" element={<PremiumSuccessPage />} />
+            <Route path="/premium"              element={<PremiumPage />} />
+            <Route path="/premium/success"     element={<PremiumSuccessPage />} />
+            <Route path="/post-a-job"           element={<PostAJobPage />} />
+            <Route path="/post-a-job/success"   element={<PostAJobSuccessPage />} />
             <Route path="*"              element={<NotFoundPage />} />
           </Route>
         </Routes>

@@ -9,7 +9,7 @@ import type {
 // ─── JOBS ────────────────────────────────────────────────────
 
 export async function fetchJobs(filters: JobFilters = {}): Promise<PaginatedResponse<Job>> {
-  let q = supabase.from('jobs').select('*', { count: 'exact' })
+  let q = supabase.from('jobs').select('*', { count: 'exact' }).eq('status', 'active')
 
   if (filters.discipline)      q = q.eq('discipline', filters.discipline)
   if (filters.disciplines && filters.disciplines.length > 0) q = q.in('discipline', filters.disciplines)
@@ -30,7 +30,7 @@ export async function fetchJobs(filters: JobFilters = {}): Promise<PaginatedResp
 }
 
 export async function fetchJob(id: string): Promise<SingleResponse<Job>> {
-  const { data, error } = await supabase.from('jobs').select('*').eq('id', id).single()
+  const { data, error } = await supabase.from('jobs').select('*').eq('id', id).eq('status', 'active').single()
   if (error) throw error
   return { data: mapJob(data) }
 }
@@ -52,7 +52,7 @@ export async function fetchStudio(id: string): Promise<SingleResponse<Studio>> {
 export async function fetchStudioJobs(id: string): Promise<PaginatedResponse<Job>> {
   const { data, count, error } = await supabase
     .from('jobs').select('*', { count: 'exact' })
-    .eq('studio_id', id).order('posted_at', { ascending: false })
+    .eq('studio_id', id).eq('status', 'active').order('posted_at', { ascending: false })
   if (error) throw error
   return { data: (data ?? []).map(mapJob), total: count ?? 0, page: 1, limit: count ?? 0 }
 }

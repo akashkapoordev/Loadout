@@ -28,6 +28,55 @@ Deno.serve(async (req) => {
   try {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
+
+      // ── Job posting payment ──────────────────────────────────
+      if (session.metadata?.type === 'job_posting') {
+        const pendingId = session.metadata.pending_id
+        const tier = session.metadata.tier as 'standard' | 'featured'
+        if (!pendingId) throw new Error('Missing pending_id in metadata')
+
+        // Fetch job data from pending table
+        const { data: pending, error: fetchErr } = await supabaseAdmin
+          .from('pending_job_postings').select('data, tier').eq('id', pendingId).single()
+        if (fetchErr || !pending) throw new Error(`Pending job not found: ${fetchErr?.message}`)
+
+        const job = pending.data as Record<string, unknown>
+        const isFeatured = tier === 'featured'
+        const tags: string[] = ['new']
+        if (isFeatured) tags.push('featured')
+        if (job.remote) tags.push('remote')
+
+        // Insert active job
+        await supabaseAdmin.from('jobs').insert({
+          id: `paid-${pendingId}`,
+          studio_id: null,
+          title: job.title,
+          company: job.company,
+          company_logo: (job.company as string).slice(0, 2).toUpperCase(),
+          company_color: '#FF5C00',
+          location: job.location,
+          remote: job.remote ?? false,
+          discipline: job.discipline,
+          experience_level: job.experienceLevel,
+          salary_band: job.salaryBand ?? null,
+          salary: job.salary ?? null,
+          tags,
+          posted_at: new Date().toISOString(),
+          description: job.description,
+          apply_url: job.applyUrl,
+          source: 'paid',
+          status: 'active',
+        })
+
+        // Clean up pending row
+        await supabaseAdmin.from('pending_job_postings').delete().eq('id', pendingId)
+
+        return new Response(JSON.stringify({ received: true }), {
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
+      // ── Premium subscription ─────────────────────────────────
       const userId = session.client_reference_id
       if (!userId) throw new Error('Missing client_reference_id')
 
