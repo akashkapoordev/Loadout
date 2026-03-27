@@ -15,6 +15,7 @@ import ContentTypeBadge from '../components/ContentTypeBadge'
 import TrendingList from '../components/TrendingList'
 import PageHeader from '../components/PageHeader'
 import { useBreakpoint } from '../hooks/useBreakpoint'
+import { useAuth } from '../context/AuthContext'
 import CarbonAd from '../components/CarbonAd'
 import GoogleAd from '../components/GoogleAd'
 import AffiliateLink from '../components/AffiliateLink'
@@ -31,6 +32,7 @@ export default function ContentDetailPage() {
   })
   const related = relatedData?.data.filter(c => c.id !== id).slice(0, 3) ?? []
   const { isMobile } = useBreakpoint()
+  const { isPremium, isSubscriptionLoading, openCheckoutOrAuth } = useAuth()
 
   useEffect(() => {
     if (item) document.title = `${item.title} — Loadout`
@@ -115,8 +117,8 @@ export default function ContentDetailPage() {
           {/* Carbon Ad — mobile only; desktop version lives in the sidebar */}
           {isMobile && (
             <div style={{ marginBottom: 24 }}>
-              <CarbonAd />
-              <GoogleAd />
+              <CarbonAd hidden={isPremium} />
+              <GoogleAd hidden={isPremium} />
             </div>
           )}
 
@@ -128,54 +130,88 @@ export default function ContentDetailPage() {
             </div>
           )}
 
-          {/* Body */}
-          <div style={{ fontSize: 16, color: 'var(--sub)', lineHeight: 1.8 }}>
-            {(() => {
-              // Pre-process lines into segments: plain text lines and fenced code blocks
-              const segments: Array<{ type: 'line'; content: string } | { type: 'code'; content: string }> = []
-              let inCode = false
-              let codeLines: string[] = []
-              for (const line of item.body.split('\n')) {
-                if (line.startsWith('```')) {
-                  if (inCode) {
-                    segments.push({ type: 'code', content: codeLines.join('\n') })
-                    codeLines = []
-                    inCode = false
+          {/* Body — gated for non-premium users when item.isPremium is true */}
+          {item.isPremium && isSubscriptionLoading ? (
+            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)', fontSize: 13 }}>
+              Loading…
+            </div>
+          ) : item.isPremium && !isPremium ? (
+            <>
+              {/* Blurred teaser */}
+              <div style={{ position: 'relative', overflow: 'hidden', maxHeight: 200, marginBottom: 0 }}>
+                <div style={{ fontSize: 16, color: 'var(--sub)', lineHeight: 1.8, pointerEvents: 'none', userSelect: 'none' }}>
+                  {item.bodyTeaser}
+                </div>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, background: 'linear-gradient(to bottom, transparent, var(--bg))' }} />
+              </div>
+              {/* Upsell card */}
+              <div style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 28, background: 'var(--surface)', textAlign: 'center', marginTop: 0 }}>
+                <div style={{ fontSize: 11, fontFamily: 'var(--font-ui)', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' as const, color: 'var(--orange)', marginBottom: 12 }}>
+                  Premium Content
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>
+                  Unlock the full article
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 24, lineHeight: 1.5 }}>
+                  Get ad-free reading and access to all premium guides, tutorials, and devlogs for $7/month.
+                </div>
+                <button
+                  onClick={openCheckoutOrAuth}
+                  style={{ padding: '12px 32px', fontSize: 14, fontFamily: 'var(--font-ui)', fontWeight: 700, background: 'var(--orange)', color: '#fff', border: 'none', borderRadius: 9, cursor: 'pointer', boxShadow: '0 0 20px rgba(255,92,0,0.35)' }}
+                >
+                  Upgrade — $7/month
+                </button>
+              </div>
+            </>
+          ) : (
+            <div style={{ fontSize: 16, color: 'var(--sub)', lineHeight: 1.8 }}>
+              {(() => {
+                // Pre-process lines into segments: plain text lines and fenced code blocks
+                const segments: Array<{ type: 'line'; content: string } | { type: 'code'; content: string }> = []
+                let inCode = false
+                let codeLines: string[] = []
+                for (const line of (item.body ?? '').split('\n')) {
+                  if (line.startsWith('```')) {
+                    if (inCode) {
+                      segments.push({ type: 'code', content: codeLines.join('\n') })
+                      codeLines = []
+                      inCode = false
+                    } else {
+                      inCode = true
+                    }
+                  } else if (inCode) {
+                    codeLines.push(line)
                   } else {
-                    inCode = true
+                    segments.push({ type: 'line', content: line })
                   }
-                } else if (inCode) {
-                  codeLines.push(line)
-                } else {
-                  segments.push({ type: 'line', content: line })
                 }
-              }
 
-              return segments.map((segment, i) => {
-                if (segment.type === 'code') {
-                  return (
-                    <pre key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: 16, overflowX: 'auto', fontSize: 13, fontFamily: 'monospace', color: 'var(--sub)', margin: '16px 0', lineHeight: 1.6 }}>
-                      <code>{segment.content}</code>
-                    </pre>
+                return segments.map((segment, i) => {
+                  if (segment.type === 'code') {
+                    return (
+                      <pre key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: 16, overflowX: 'auto', fontSize: 13, fontFamily: 'monospace', color: 'var(--sub)', margin: '16px 0', lineHeight: 1.6 }}>
+                        <code>{segment.content}</code>
+                      </pre>
+                    )
+                  }
+
+                  const line = segment.content
+                  if (line.startsWith('# ')) return <h2 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', margin: '32px 0 16px' }}>{line.slice(2)}</h2>
+                  if (line.startsWith('## ')) return <h3 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800, color: 'var(--text)', margin: '24px 0 12px' }}>{line.slice(3)}</h3>
+                  if (line.startsWith('### ')) return <h4 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 800, color: 'var(--text)', margin: '20px 0 10px' }}>{line.slice(4)}</h4>
+                  if (line === '') return <br key={i} />
+                  if (line.startsWith('- ') || line.startsWith('* ')) return <p key={i} style={{ marginBottom: 8, marginLeft: 16 }}>{renderBold('• ' + line.slice(2))}</p>
+                  if (/^\d+\.\s/.test(line)) return <p key={i} style={{ marginBottom: 8, marginLeft: 16 }}>{renderBold(line)}</p>
+                  if (line.startsWith('> ')) return (
+                    <blockquote key={i} style={{ borderLeft: '3px solid var(--orange)', paddingLeft: 16, margin: '16px 0', color: 'var(--muted)', fontStyle: 'italic' }}>
+                      {renderBold(line.slice(2))}
+                    </blockquote>
                   )
-                }
-
-                const line = segment.content
-                if (line.startsWith('# ')) return <h2 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', margin: '32px 0 16px' }}>{line.slice(2)}</h2>
-                if (line.startsWith('## ')) return <h3 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800, color: 'var(--text)', margin: '24px 0 12px' }}>{line.slice(3)}</h3>
-                if (line.startsWith('### ')) return <h4 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 800, color: 'var(--text)', margin: '20px 0 10px' }}>{line.slice(4)}</h4>
-                if (line === '') return <br key={i} />
-                if (line.startsWith('- ') || line.startsWith('* ')) return <p key={i} style={{ marginBottom: 8, marginLeft: 16 }}>{renderBold('• ' + line.slice(2))}</p>
-                if (/^\d+\.\s/.test(line)) return <p key={i} style={{ marginBottom: 8, marginLeft: 16 }}>{renderBold(line)}</p>
-                if (line.startsWith('> ')) return (
-                  <blockquote key={i} style={{ borderLeft: '3px solid var(--orange)', paddingLeft: 16, margin: '16px 0', color: 'var(--muted)', fontStyle: 'italic' }}>
-                    {renderBold(line.slice(2))}
-                  </blockquote>
-                )
-                return <p key={i} style={{ marginBottom: 16 }}>{renderBold(line)}</p>
-              })
-            })()}
-          </div>
+                  return <p key={i} style={{ marginBottom: 16 }}>{renderBold(line)}</p>
+                })
+              })()}
+            </div>
+          )}
 
           {/* Read full article CTA */}
           {item.sourceUrl && (
@@ -238,8 +274,8 @@ export default function ContentDetailPage() {
           <div style={{ position: 'sticky', top: 72, display: 'flex', flexDirection: 'column', gap: 32 }}>
 
             {/* Carbon Ad / Google Ad — desktop only; mobile version is above the thumbnail */}
-            {!isMobile && <CarbonAd />}
-            {!isMobile && <GoogleAd />}
+            {!isMobile && <CarbonAd hidden={isPremium} />}
+            {!isMobile && <GoogleAd hidden={isPremium} />}
 
             {/* Author card */}
             {item.author && (
