@@ -21,7 +21,9 @@ export interface ContentItem {
   views: number
   rating: number
   tags: string[]
-  body: string
+  body: string | null   // null when content is premium-gated and user is not subscribed
+  bodyTeaser?: string   // first 300 chars, always present from the view (Phase 2 addition)
+  isPremium?: boolean   // true if this content requires a subscription
   sourceUrl?: string
 }
 
